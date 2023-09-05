@@ -59,8 +59,6 @@ def serverconf(cfg):
         f'Address = {cfg["ipv6"] + ipv6_prefix}\n'
         f'ListenPort = 51820\n'
         f'PrivateKey = {cfg["key"]}\n'
-
-        # TODO probably need to change
         f'PostUp = sysctl -w net.ipv4.ip_forward=1\n'
         f'PostUp = sysctl -w net.ipv6.conf.all.forwarding=1\n'
         f'PostUp = iptables -A FORWARD -i wg0 -j ACCEPT\n'
@@ -113,7 +111,7 @@ if __name__ == '__main__':
         })
 
         with open(c + '.conf', 'w') as file:
-            file.write(clientconf(cfg, key))
+            file.write(clientconf(cfg, key)) # qrencode -t ansiutf8 < <conf>
 
     # generate files
     with wg_json.open('w') as file:
@@ -123,5 +121,5 @@ if __name__ == '__main__':
     with wg_conf.open('w') as file:
         file.write(serverconf(cfg))
 
-    print('encode as QR with "qrencode -t ansiutf8 < <conf>"')
-    print('run "sudo systemctl restart wg-quick@wg0.service" to load new settings')
+    # reload new configs
+    subprocess.check_output(['systemctl', 'reload', 'wg-quick@wg0.service'])
