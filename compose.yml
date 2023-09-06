@@ -1,0 +1,8 @@
+services:
+  minecraft:
+    build: minecraft/.
+    entrypoint: ["/bin/sh", "/root/entry.sh"]
+    ports:
+      - "25565:25565"
+    volumes:
+      - ./minecraft/world:/root/world
