@@ -1,9 +1,17 @@
 services:
   minecraft:
+    restart: always
     build: minecraft/.
     entrypoint: ["/bin/sh", "/root/entry.sh"]
     ports:
       - "25565:25565"
     volumes:
       - ./minecraft/world:/root/world
+  terraria:
     restart: always
+    build: terraria/.
+    entrypoint: ["/bin/sh", "/root/entry.sh"]
+    ports:
+      - "7777:7777"
+    volumes:
+      - ./terraria/worlds:/root/worlds

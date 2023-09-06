@@ -4,5 +4,9 @@ __pycache__
 # minecraft
 minecraft/world
 
+# terraria
+terraria/worlds
+terraria/password.txt
+
 # wireguard
 wireguard/*.conf
