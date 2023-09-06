@@ -15,9 +15,13 @@ Forward the following ports to the server.
 | terraria  | 7777    |
 | wireguard | 51820   |
 
+Run the following commands.
+
 ```
-docker compose build
+apt install docker.io
+apt install docker-compose
+docker-compose build
+docker-compose up -d # auto restarts on reboot!
 ```
 
-TODO service that runs on boot (and restarts/stops gracefully)
 TODO backup script

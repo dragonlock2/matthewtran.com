@@ -6,3 +6,4 @@ services:
       - "25565:25565"
     volumes:
       - ./minecraft/world:/root/world
+    restart: always
