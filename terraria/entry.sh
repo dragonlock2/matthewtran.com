@@ -1,12 +1,13 @@
 #!/bin/sh
 
 cleanup() {
-    echo "TODO"
+    echo "exit\n" > cmd
 }
 
 trap 'cleanup' TERM
 
-# TODO use tmux so can send exit
-./TerrariaServer.bin.x86_64 -config config.txt -pass $(cat password.txt) &
+mkfifo cmd
+./TerrariaServer.bin.x86_64 -config config.txt -pass $(cat password.txt) < cmd &
+echo "help\n" > cmd # shell waits for FIFO to be opened for writing before starting program!
 wait $! # wait for SIGTERM
-# wait $! # wait for server to stop
+wait $! # wait for server to stop

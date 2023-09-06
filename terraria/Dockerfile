@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 WORKDIR /root
 
 RUN apt-get update && apt-get upgrade
-RUN apt-get install -y wget unzip tmux
+RUN apt-get install -y wget unzip
 
 # from https://terraria.fandom.com/wiki/Server (currently 1.4.4.9)
 RUN wget https://terraria.org/api/download/pc-dedicated-server/terraria-server-1449.zip
