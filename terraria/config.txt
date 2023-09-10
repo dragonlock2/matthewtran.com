@@ -1,5 +1,5 @@
-world=/root/worlds/default.wld
+world=/home/matt/worlds/default.wld
 autocreate=3
 worldname=default
 difficulty=2
-worldpath=/root/worlds
+worldpath=/home/matt/worlds

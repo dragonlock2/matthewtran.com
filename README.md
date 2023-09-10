@@ -8,6 +8,7 @@ Stuff that's deployed on [matthewtran.com](matthewtran.com). Tested on Ubuntu Se
 - p2pool (`xmrig -o matthewtran.com:3333`)
 - minecraft
 - terraria
+- wireguard
 
 ## setup
 

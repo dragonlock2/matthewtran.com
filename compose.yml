@@ -2,25 +2,35 @@ services:
   monerod:
     restart: always
     build: monerod/.
-    entrypoint: ["/bin/sh", "/root/entry.sh"]
+    entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
     ports:
       - "18080:18080"
       - "18083:18083"
     volumes:
-      - ./monerod/.bitmonero:/root/.bitmonero
+      - ./monerod/.bitmonero:/home/matt/.bitmonero
+  p2pool:
+    restart: always
+    build: p2pool/.
+    # entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
+    ports:
+      - "3333:3333"
+      - "37888:37888"
+      - "37889:37889"
+    # volumes:
+    #   - ./monerod/.bitmonero:/home/matt/.bitmonero
   minecraft:
     restart: always
     build: minecraft/.
-    entrypoint: ["/bin/sh", "/root/entry.sh"]
+    entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
     ports:
       - "25565:25565"
     volumes:
-      - ./minecraft/world:/root/world
+      - ./minecraft/world:/home/matt/world
   terraria:
     restart: always
     build: terraria/.
-    entrypoint: ["/bin/sh", "/root/entry.sh"]
+    entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
     ports:
       - "7777:7777"
     volumes:
-      - ./terraria/worlds:/root/worlds
+      - ./terraria/worlds:/home/matt/worlds
