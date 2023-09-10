@@ -1,5 +1,5 @@
 world=/root/worlds/default.wld
 autocreate=3
 worldname=default
-difficulty=0
+difficulty=2
 worldpath=/root/worlds

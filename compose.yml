@@ -1,4 +1,13 @@
 services:
+  monerod:
+    restart: always
+    build: monerod/.
+    entrypoint: ["/bin/sh", "/root/entry.sh"]
+    ports:
+      - "18080:18080"
+      - "18083:18083"
+    volumes:
+      - ./monerod/.bitmonero:/root/.bitmonero
   minecraft:
     restart: always
     build: minecraft/.
