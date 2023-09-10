@@ -4,6 +4,9 @@ __pycache__
 # monerod
 monerod/.bitmonero
 
+# p2pool
+p2pool/cache
+
 # minecraft
 minecraft/world
 

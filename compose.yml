@@ -5,19 +5,20 @@ services:
     entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
     ports:
       - "18080:18080"
+      - "18081:18081"
       - "18083:18083"
     volumes:
       - ./monerod/.bitmonero:/home/matt/.bitmonero
   p2pool:
     restart: always
     build: p2pool/.
-    # entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
+    entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
     ports:
       - "3333:3333"
       - "37888:37888"
       - "37889:37889"
-    # volumes:
-    #   - ./monerod/.bitmonero:/home/matt/.bitmonero
+    volumes:
+      - ./p2pool/cache:/home/matt/cache
   minecraft:
     restart: always
     build: minecraft/.
