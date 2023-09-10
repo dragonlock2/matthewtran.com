@@ -1,12 +1,19 @@
 services:
+  website:
+    restart: always
+    build: website/.
+    # entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
+    ports:
+      - "80:80"
+      - "443:443"
+    # volumes:
+    #   - ./monerod/.bitmonero:/home/matt/.bitmonero
   monerod:
     restart: always
     build: monerod/.
     entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
     ports:
       - "18080:18080"
-      - "18081:18081"
-      - "18083:18083"
     volumes:
       - ./monerod/.bitmonero:/home/matt/.bitmonero
   p2pool:
@@ -19,6 +26,7 @@ services:
       - "37889:37889"
     volumes:
       - ./p2pool/cache:/home/matt/cache
+      - /dev/hugepages:/dev/hugepages
   minecraft:
     restart: always
     build: minecraft/.

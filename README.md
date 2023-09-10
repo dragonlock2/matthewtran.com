@@ -3,7 +3,7 @@
 Stuff that's deployed on [matthewtran.com](matthewtran.com). Tested on Ubuntu Server 22.04.3 LTS. Currently running the following services.
 
 - website
-- gitlab
+- gitea (`git.matthewtran.com`)
 - monerod
 - p2pool (`xmrig -o matthewtran.com:3333`)
 - minecraft
