@@ -21,3 +21,6 @@ terraria/password.txt
 
 # wireguard
 wireguard/*.conf
+
+# backup
+data.zip

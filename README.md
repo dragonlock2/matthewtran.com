@@ -32,3 +32,7 @@ docker compose up -d # auto restarts on reboot!
 ```
 
 Note for first start you'll need to configure Gitea. You may also need to `chown` and `chmod` the mounted folders for each container.
+
+## backup
+
+Run `./backup` and save the resultant `data.zip` somewhere. I should probably automate this.

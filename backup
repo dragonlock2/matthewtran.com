@@ -1,0 +1,9 @@
+#!/bin/sh
+
+zip -FS -r data.zip \
+    minecraft/world \
+    terraria/worlds \
+    terraria/password.txt \
+    website/gitea \
+    website/letsencrypt \
+    website/sendgrid.key
