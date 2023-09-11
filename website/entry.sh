@@ -8,7 +8,6 @@ do
 done
 
 certbot --nginx \
-    --test-cert \
     --webroot-path /var/www/matthewtran.com \
     --non-interactive --agree-tos -m matthewlamtran@berkeley.edu \
     -d matthewtran.com \

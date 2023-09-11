@@ -14,7 +14,8 @@ services:
     ports:
       - "2222:2222"
     volumes:
-      - ./website/gitea:/data
+      - ./website/gitea/data:/var/lib/gitea
+      - ./website/gitea/config:/etc/gitea
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
   monerod:
