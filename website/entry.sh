@@ -15,6 +15,7 @@ certbot --nginx \
     -d git.matthewtran.com
 
 nginx -s reload
+python3 ip_update.py &
 
 # try renew once a day
 while true

@@ -24,11 +24,11 @@ Forward the following ports to the server.
 | terraria  | 7777               |
 | wireguard | 51820              |
 
-Run the following commands.
+Run the following commands. For the IP update script, add a SendGrid API key to `website/sendgrid.key`.
 
 ```
 docker compose build
 docker compose up -d # auto restarts on reboot!
 ```
 
-Note for first start you'll need to configure Gitea.
+Note for first start you'll need to configure Gitea. You may also need to `chown` and `chmod` the mounted folders for each container.

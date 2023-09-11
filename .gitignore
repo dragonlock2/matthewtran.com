@@ -4,6 +4,7 @@ __pycache__
 # website
 website/gitea
 website/letsencrypt
+website/sendgrid.key
 
 # monerod
 monerod/.bitmonero
