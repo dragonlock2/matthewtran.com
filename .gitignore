@@ -2,6 +2,7 @@
 __pycache__
 
 # website
+website/gitea
 website/letsencrypt
 
 # monerod

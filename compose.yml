@@ -10,11 +10,13 @@ services:
       - ./website/letsencrypt:/etc/letsencrypt
   gitea:
     restart: always
-    image: gitea/gitea:latest
+    image: gitea/gitea:latest-rootless
     ports:
-      - "2222:22"
-    # TODO add volumes for gitea default settings
-    # TODO add volumes to save data
+      - "2222:2222"
+    volumes:
+      - ./website/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
   monerod:
     restart: always
     build: monerod/.

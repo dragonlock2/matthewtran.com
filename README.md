@@ -17,6 +17,7 @@ Forward the following ports to the server.
 | service   | port               |
 |-----------|--------------------|
 | website   | 80, 443            |
+| gitea     | 2222               |
 | monerod   | 18080              |
 | p2pool    | 3333, 37888, 37889 |
 | minecraft | 25565              |
@@ -26,10 +27,8 @@ Forward the following ports to the server.
 Run the following commands.
 
 ```
-apt install docker.io
-apt install docker-compose
-docker-compose build
-docker-compose up -d # auto restarts on reboot!
+docker compose build
+docker compose up -d # auto restarts on reboot!
 ```
 
-TODO backup script
+Note for first start you'll need to configure Gitea.
