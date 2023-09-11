@@ -1,18 +1,19 @@
 #!/bin/sh
 
+# server needs to be up to grab certificates
 nginx
 while [ ! -f /var/run/nginx.pid ]
 do
     sleep 1
 done
 
-# server needs to be up to grab certificates
 certbot --nginx \
     --test-cert \
     --webroot-path /var/www/matthewtran.com \
     --non-interactive --agree-tos -m matthewlamtran@berkeley.edu \
     -d matthewtran.com \
-    -d www.matthewtran.com
+    -d www.matthewtran.com \
+    -d git.matthewtran.com
 
 nginx -s reload
 

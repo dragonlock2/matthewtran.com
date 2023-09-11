@@ -8,6 +8,13 @@ services:
       - "443:443"
     volumes:
       - ./website/letsencrypt:/etc/letsencrypt
+  gitea:
+    restart: always
+    image: gitea/gitea:latest
+    ports:
+      - "2222:22"
+    # TODO add volumes for gitea default settings
+    # TODO add volumes to save data
   monerod:
     restart: always
     build: monerod/.
