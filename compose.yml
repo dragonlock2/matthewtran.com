@@ -6,6 +6,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - ./website/letsencrypt:/etc/letsencrypt
   monerod:
     restart: always
     build: monerod/.
