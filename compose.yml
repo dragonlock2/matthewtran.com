@@ -22,6 +22,8 @@ services:
     restart: always
     build: monerod/.
     entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
+    stdin_open: true
+    tty: true
     ports:
       - "18080:18080"
     volumes:
@@ -30,6 +32,8 @@ services:
     restart: always
     build: p2pool/.
     entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
+    stdin_open: true
+    tty: true
     ports:
       - "3333:3333"
       - "37888:37888"

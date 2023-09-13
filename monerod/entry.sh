@@ -10,5 +10,4 @@ monero/monerod \
     --add-priority-node=node.supportxmr.com:18080 \
     --add-priority-node=nodes.hashvault.pro:18080 \
     --disable-dns-checkpoints \
-    --enable-dns-blocklist \
-    --non-interactive
+    --enable-dns-blocklist
