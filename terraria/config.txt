@@ -1,5 +1,6 @@
-world=/home/matt/worlds/default.wld
+world=/home/matt/worlds/legendary.wld
 autocreate=3
-worldname=default
+seed=getfixedboi
+worldname=legendary
 difficulty=2
 worldpath=/home/matt/worlds
