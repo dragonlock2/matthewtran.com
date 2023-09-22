@@ -12,7 +12,8 @@ if __name__ == '__main__':
     old_ipv4, old_ipv6 = None, None
     while True:
         ipv4 = urllib.request.urlopen('https://v4.ident.me').read().decode('utf8')
-        ipv6 = urllib.request.urlopen('https://v6.ident.me').read().decode('utf8')
+        # ipv6 = urllib.request.urlopen('https://v6.ident.me').read().decode('utf8')
+        ipv6 = None
 
         if ipv4 != old_ipv4 or ipv6 != old_ipv6:
             msg = Mail(
