@@ -24,6 +24,17 @@ Forward the following ports to the server.
 | terraria  | 7777               |
 | wireguard | 51820              |
 
+Make sure IPv6 is enabled in Docker by modifying `/etc/docker/daemon.json`. For example:
+
+```
+{
+    "ipv6": true,
+    "fixed-cidr-v6": "2001:db8:1::/64",
+    "experimental": true,
+    "ip6tables": true
+}
+```
+
 Run the following commands. For the IP update script, add a SendGrid API key to `website/sendgrid.key`.
 
 ```
