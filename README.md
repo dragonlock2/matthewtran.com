@@ -7,7 +7,7 @@ Stuff that's deployed on [matthewtran.com](http://matthewtran.com). Tested on Ub
 - monerod
 - p2pool (`xmrig -o matthewtran.com:3333`)
 - minecraft
-- terraria
+- ~~terraria~~
 - wireguard
 
 ## setup

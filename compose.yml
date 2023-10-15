@@ -65,13 +65,13 @@ services:
       - default6
     volumes:
       - ./minecraft/world:/home/matt/world
-  terraria:
-    restart: always
-    build: terraria/.
-    entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
-    ports:
-      - "7777:7777"
-    networks:
-      - default6
-    volumes:
-      - ./terraria/worlds:/home/matt/worlds
+  # terraria:
+  #   restart: always
+  #   build: terraria/.
+  #   entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
+  #   ports:
+  #     - "7777:7777"
+  #   networks:
+  #     - default6
+  #   volumes:
+  #     - ./terraria/worlds:/home/matt/worlds
