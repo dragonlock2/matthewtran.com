@@ -4,7 +4,7 @@ FROM ubuntu:22.04
 ENV TZ=America/Los_Angeles
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-get update && apt-get upgrade
+RUN apt-get update && apt-get -y upgrade
 RUN apt-get install -y nginx certbot python3-certbot-nginx python3-pip
 RUN pip3 install sendgrid
 
