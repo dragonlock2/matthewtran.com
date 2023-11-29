@@ -13,7 +13,7 @@ monerod/.bitmonero
 p2pool/cache
 
 # minecraft
-minecraft/world
+minecraft/world*
 
 # terraria
 terraria/worlds
