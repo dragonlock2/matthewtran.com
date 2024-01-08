@@ -7,9 +7,9 @@ RUN useradd -m matt
 USER matt
 WORKDIR /home/matt
 
-# currently v3.9
-RUN wget https://github.com/SChernykh/p2pool/releases/download/v3.9/p2pool-v3.9-linux-x64.tar.gz
-RUN tar xvf p2pool-v3.9-linux-x64.tar.gz
-RUN mv p2pool-v3.9-linux-x64/p2pool ./p2pool
+# currently v3.10
+RUN wget https://github.com/SChernykh/p2pool/releases/download/v3.10/p2pool-v3.10-linux-x64.tar.gz
+RUN tar xvf p2pool-v3.10-linux-x64.tar.gz
+RUN mv p2pool-v3.10-linux-x64/p2pool ./p2pool
 
 COPY --chown=matt:matt entry.sh ./
