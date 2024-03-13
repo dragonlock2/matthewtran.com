@@ -7,8 +7,8 @@ RUN useradd -m matt
 USER matt
 WORKDIR /home/matt
 
-RUN wget https://downloads.getmonero.org/linux64
+RUN wget https://downloads.getmonero.org/cli/linux64
 RUN tar xvf linux64 && rm linux64
-RUN mv monero-x86_64-linux-gnu-v0.18.3.1/ monero/
+RUN mv monero-x86_64-linux-gnu-v0.18.3.2/ monero/
 
 COPY --chown=matt:matt entry.sh ./
