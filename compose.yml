@@ -76,13 +76,13 @@ services:
       - default6
     volumes:
       - ./minecraft_bedrock/worlds:/home/ubuntu/worlds
-  terraria:
-    restart: always
-    build: terraria/.
-    entrypoint: ["/bin/sh", "/home/ubuntu/entry.sh"]
-    ports:
-      - "7777:7777"
-    networks:
-      - default6
-    volumes:
-      - ./terraria/worlds:/home/ubuntu/worlds
+  # terraria:
+  #   restart: always
+  #   build: terraria/.
+  #   entrypoint: ["/bin/sh", "/home/ubuntu/entry.sh"]
+  #   ports:
+  #     - "7777:7777"
+  #   networks:
+  #     - default6
+  #   volumes:
+  #     - ./terraria/worlds:/home/ubuntu/worlds
