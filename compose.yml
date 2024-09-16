@@ -31,7 +31,7 @@ services:
   monerod:
     restart: always
     build: monerod/.
-    entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
+    entrypoint: ["/bin/sh", "/home/ubuntu/entry.sh"]
     stdin_open: true
     tty: true
     ports:
@@ -39,11 +39,11 @@ services:
     networks:
       - default6
     volumes:
-      - ./monerod/.bitmonero:/home/matt/.bitmonero
+      - ./monerod/.bitmonero:/home/ubuntu/.bitmonero
   p2pool:
     restart: always
     build: p2pool/.
-    entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
+    entrypoint: ["/bin/sh", "/home/ubuntu/entry.sh"]
     stdin_open: true
     tty: true
     ports:
@@ -53,36 +53,36 @@ services:
     networks:
       - default6
     volumes:
-      - ./p2pool/cache:/home/matt/cache
+      - ./p2pool/cache:/home/ubuntu/cache
       - /dev/hugepages:/dev/hugepages
   minecraft:
     restart: always
     build: minecraft/.
-    entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
+    entrypoint: ["/bin/sh", "/home/ubuntu/entry.sh"]
     ports:
       - "25565:25565"
     networks:
       - default6
     volumes:
-      - ./minecraft/world:/home/matt/world
+      - ./minecraft/world:/home/ubuntu/world
   minecraft_bedrock:
     restart: always
     build: minecraft_bedrock/.
-    entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
+    entrypoint: ["/bin/sh", "/home/ubuntu/entry.sh"]
     ports:
       - "19132:19132/udp"
       - "19133:19133/udp"
     networks:
       - default6
     volumes:
-      - ./minecraft_bedrock/worlds:/home/matt/worlds
-  # terraria:
-  #   restart: always
-  #   build: terraria/.
-  #   entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
-  #   ports:
-  #     - "7777:7777"
-  #   networks:
-  #     - default6
-  #   volumes:
-  #     - ./terraria/worlds:/home/matt/worlds
+      - ./minecraft_bedrock/worlds:/home/ubuntu/worlds
+  terraria:
+    restart: always
+    build: terraria/.
+    entrypoint: ["/bin/sh", "/home/ubuntu/entry.sh"]
+    ports:
+      - "7777:7777"
+    networks:
+      - default6
+    volumes:
+      - ./terraria/worlds:/home/ubuntu/worlds

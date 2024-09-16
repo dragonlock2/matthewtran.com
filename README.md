@@ -8,7 +8,7 @@ Stuff that's deployed on [matthewtran.com](http://matthewtran.com). Tested on Ub
 - p2pool (`xmrig -o matthewtran.com:3333`)
 - minecraft
 - minecraft bedrock
-- ~~terraria~~
+- terraria
 - wireguard
 
 ## setup
@@ -44,14 +44,22 @@ docker compose build
 docker compose up -d # auto restarts on reboot!
 ```
 
-Note for first start you'll need to configure Gitea. You may also need to `chown` and `chmod` the mounted folders for each container.
+Note for first start you'll need to configure Gitea.
 
 ## backup
 
-Run `./backup` and save the resultant `data.zip` somewhere. I should probably automate this.
+Run `./backup.sh` and save the resultant `data.zip` somewhere. I should probably automate this.
 
 ## TODO
 
-- full setup script
-- correct volume mounting w/o need `chown`/`chmod`
-- better backup and restore
+- better setup
+    - install ubuntu
+    - forward ports
+    - enable ssh
+    - install wireguard
+    - run script to setup wireguard
+    - install docker + compose
+    - run `volumes.sh` => container user has same uid/gid, can access
+    - run docker compose
+    - ufw?
+    - need to setup gitea
