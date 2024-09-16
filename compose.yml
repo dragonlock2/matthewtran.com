@@ -65,6 +65,17 @@ services:
       - default6
     volumes:
       - ./minecraft/world:/home/matt/world
+  minecraft_bedrock:
+    restart: always
+    build: minecraft_bedrock/.
+    entrypoint: ["/bin/sh", "/home/matt/entry.sh"]
+    ports:
+      - "19132:19132/udp"
+      - "19133:19133/udp"
+    networks:
+      - default6
+    volumes:
+      - ./minecraft_bedrock/worlds:/home/matt/worlds
   # terraria:
   #   restart: always
   #   build: terraria/.

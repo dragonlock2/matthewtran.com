@@ -3,10 +3,11 @@
 Stuff that's deployed on [matthewtran.com](http://matthewtran.com). Tested on Ubuntu Server 22.04.3 LTS. Currently running the following services.
 
 - website
-- gitea ([git.matthewtran.com](http://git.matthewtran.com))
+- gitea ([git.matthewtran.com](https://git.matthewtran.com))
 - monerod
 - p2pool (`xmrig -o matthewtran.com:3333`)
 - minecraft
+- minecraft bedrock
 - ~~terraria~~
 - wireguard
 
@@ -14,15 +15,16 @@ Stuff that's deployed on [matthewtran.com](http://matthewtran.com). Tested on Ub
 
 Forward the following ports to the server.
 
-| service   | port               |
-|-----------|--------------------|
-| website   | 80, 443            |
-| gitea     | 2222               |
-| monerod   | 18080              |
-| p2pool    | 3333, 37888, 37889 |
-| minecraft | 25565              |
-| terraria  | 7777               |
-| wireguard | 51820              |
+| service           | port               |
+|-------------------|--------------------|
+| website           | 80, 443            |
+| gitea             | 2222               |
+| monerod           | 18080              |
+| p2pool            | 3333, 37888, 37889 |
+| minecraft         | 25565              |
+| minecraft bedrock | 19132, 19133       |
+| terraria          | 7777               |
+| wireguard         | 51820              |
 
 Make sure IPv6 is enabled in Docker by modifying `/etc/docker/daemon.json`. For example:
 
@@ -47,3 +49,9 @@ Note for first start you'll need to configure Gitea. You may also need to `chown
 ## backup
 
 Run `./backup` and save the resultant `data.zip` somewhere. I should probably automate this.
+
+## TODO
+
+- full setup script
+- correct volume mounting w/o need `chown`/`chmod`
+- better backup and restore

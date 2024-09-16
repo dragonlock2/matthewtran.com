@@ -15,6 +15,9 @@ p2pool/cache
 # minecraft
 minecraft/world*
 
+# minecraft_bedrock
+minecraft_bedrock/worlds*
+
 # terraria
 terraria/worlds
 terraria/password.txt
