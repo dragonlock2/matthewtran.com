@@ -16,10 +16,11 @@ certbot --nginx \
 
 nginx -s reload
 python3 ip_update.py &
+python3 cert_update.py &
 
-# try renew once a day
-while true
-do
-    certbot renew --quiet
-    sleep 86400
-done
+cleanup() {
+    echo "stopping..."
+}
+trap 'cleanup' TERM
+
+wait $! # wait SIGTERM, other processes can just be killed

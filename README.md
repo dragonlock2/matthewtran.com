@@ -18,6 +18,8 @@ Stuff that's deployed on [matthewtran.com](https://matthewtran.com). Currently r
     - Expand the root partition if needed.
         - `lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv`
         - `resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv`
+    - Enable huge pages.
+        - `echo "vm.nr_hugepages=3072" | sudo tee -a /etc/sysctl.conf`
     - Give yourself Docker access if needed.
         - `groupadd docker`
         - `usermod -aG docker $USER`
@@ -25,6 +27,7 @@ Stuff that's deployed on [matthewtran.com](https://matthewtran.com). Currently r
         - `ufw enable`
         - `ufw allow OpenSSH`
         - `ufw allow 51820/udp`
+    - Reboot.
 2. Forward the following ports. Set a static IP if needed.
     - website - `80`, `443`
     - gitea - `2222`
