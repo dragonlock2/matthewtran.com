@@ -1,7 +1,7 @@
 FROM ubuntu:24.04
 
 RUN apt-get update && apt-get -y upgrade
-RUN apt-get install -y wget unzip curl
+RUN apt-get install -y wget unzip curl tmux
 
 USER ubuntu
 WORKDIR /home/ubuntu

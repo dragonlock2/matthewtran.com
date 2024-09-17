@@ -1,7 +1,7 @@
 #!/bin/sh
 
 cleanup() {
-    ./mcrcon -p password stop
+    ./rcon-cli --password password stop
 }
 
 trap 'cleanup' TERM
