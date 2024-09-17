@@ -41,6 +41,7 @@ services:
     volumes:
       - ./monerod/.bitmonero:/home/ubuntu/.bitmonero
   p2pool:
+    stop_grace_period: 1m # TODO reduce m_shutdownCountdown to reduce this
     restart: always
     build: p2pool/.
     entrypoint: ["/bin/sh", "/home/ubuntu/entry.sh"]
