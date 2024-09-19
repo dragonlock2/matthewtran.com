@@ -31,7 +31,7 @@ Stuff that's deployed on [matthewtran.com](https://matthewtran.com). Currently r
 2. Forward the following ports. Set a static IP if needed.
     - website - `80`, `443`
     - gitea - `2222`
-    - monerod - `18080`
+    - monerod - `18080`, `18081`
     - p2pool - `3333`, `37888`, `37889`
     - minecraft - `25565`
     - minecraft bedrock - `19132`, `19133`

@@ -36,6 +36,7 @@ services:
     tty: true
     ports:
       - "18080:18080"
+      - "18081:18081"
     networks:
       - default6
     volumes:
