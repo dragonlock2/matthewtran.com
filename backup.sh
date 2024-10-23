@@ -1,7 +1,7 @@
 #!/bin/sh
 
 zip -FS -r data.zip \
-    minecraft/world \
+    minecraft/world* \
     minecraft_bedrock/worlds \
     terraria/worlds \
     terraria/password.txt \
