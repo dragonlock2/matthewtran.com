@@ -18,5 +18,4 @@ COPY html /var/www/matthewtran.com/html
 # start script
 WORKDIR /root
 COPY sendgrid.ke[y] ip_update.py ./
-COPY cert_update.py ./
 COPY entry.sh ./

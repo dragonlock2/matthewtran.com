@@ -66,18 +66,18 @@ services:
     networks:
       - default6
     volumes:
-      - ./minecraft/world:/home/ubuntu/world
-  minecraft_bedrock:
-    restart: always
-    build: minecraft_bedrock/.
-    entrypoint: ["/bin/sh", "/home/ubuntu/entry.sh"]
-    ports:
-      - "19132:19132/udp"
-      - "19133:19133/udp"
-    networks:
-      - default6
-    volumes:
-      - ./minecraft_bedrock/worlds:/home/ubuntu/worlds
+      - ./minecraft/worlds:/home/ubuntu/worlds
+  # minecraft_bedrock:
+  #   restart: always
+  #   build: minecraft_bedrock/.
+  #   entrypoint: ["/bin/sh", "/home/ubuntu/entry.sh"]
+  #   ports:
+  #     - "19132:19132/udp"
+  #     - "19133:19133/udp"
+  #   networks:
+  #     - default6
+  #   volumes:
+  #     - ./minecraft_bedrock/worlds:/home/ubuntu/worlds
   # terraria:
   #   restart: always
   #   build: terraria/.
