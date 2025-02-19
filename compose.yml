@@ -21,18 +21,16 @@ services:
   website:
     restart: always
     build: website/.
-    entrypoint: ["/bin/sh", "/root/entry.sh"]
+    entrypoint: ["/bin/sh", "/home/ubuntu/entry.sh"]
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:8080"
+      - "443:8443"
     networks:
       - web
     volumes:
-      - ./website/letsencrypt:/etc/letsencrypt
+      - ./website/certbot:/home/ubuntu/certbot
     cap_drop:
       - ALL
-    cap_add:
-      - NET_BIND_SERVICE
   gitea:
     restart: always
     image: gitea/gitea:latest-rootless

@@ -5,18 +5,14 @@ ENV TZ=America/Los_Angeles
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update && apt-get -y upgrade
-RUN apt-get install -y nginx certbot python3-certbot-nginx python3-pip
+RUN apt-get install -y nginx certbot python3-pip
 RUN pip3 install sendgrid --break-system-packages
 
-RUN rm /etc/nginx/sites-enabled/default
+USER ubuntu
+WORKDIR /home/ubuntu
+RUN mkdir nginx certbot
 
-# enable site
 # TODO make the website code not terrible ;-;
-COPY matthewtran.com /etc/nginx/sites-available
-RUN  ln -s /etc/nginx/sites-available/matthewtran.com /etc/nginx/sites-enabled/matthewtran.com
-COPY html /var/www/matthewtran.com/html
-
-# start script
-WORKDIR /root
-COPY sendgrid.ke[y] ip_update.py ./
-COPY entry.sh ./
+COPY --chown=ubuntu:ubuntu html ./html
+COPY --chown=ubuntu:ubuntu sendgrid.ke[y] ip_update.py ./
+COPY --chown=ubuntu:ubuntu server.conf entry.sh ./

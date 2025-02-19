@@ -5,7 +5,7 @@ from pathlib import Path
 if __name__ == "__main__":
     # create folders with same UID/GID as user so containers have access
     PATHS = [
-        "website/letsencrypt",
+        "website/certbot",
         "website/gitea/config",
         "website/gitea/data",
         "monerod/.bitmonero",

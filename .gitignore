@@ -3,7 +3,7 @@ __pycache__
 
 # website
 website/gitea
-website/letsencrypt
+website/certbot
 website/sendgrid.key
 
 # monerod
