@@ -26,11 +26,12 @@ if __name__ == "__main__":
                 from_email="mtran319@gmail.com",
                 to_emails="mtran319@gmail.com",
                 subject="pls update ip",
-                html_content=f"<p>old ipv4: {old_ipv4}</p>"
-                             f"<p>old ipv6: {old_ipv6}</p>"
-                             f"<p>new ipv4: {ipv4}</p>"
-                             f"<p>new ipv6: {ipv6}</p>"
-            )
+                html_content=(
+                    f"<p>old ipv4: {old_ipv4}</p>"
+                    f"<p>old ipv6: {old_ipv6}</p>"
+                    f"<p>new ipv4: {ipv4}</p>"
+                    f"<p>new ipv6: {ipv6}</p>"
+            ))
             try:
                 print(f"IP changed to {ipv4} and {ipv6}")
                 resp = sg.send(msg)

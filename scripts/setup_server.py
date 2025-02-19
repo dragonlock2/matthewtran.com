@@ -4,7 +4,6 @@ import json
 import os
 import subprocess
 from pathlib import Path
-from setup_router import WG_IPV4, WG_IPV6
 
 def run(cmd, capture=False):
     if capture:
@@ -15,29 +14,59 @@ def run(cmd, capture=False):
 if __name__ == "__main__":
     # install dependencies and configure
     run("apt update")
-    run("apt upgrade")
-    run("apt install -y avahi-daemon btrfs-progs python-is-python3 python3-pip wireguard zip")
-    if run("ufw status", capture=True) == b"Status: inactive\n":
-        run("ufw enable")
-        run("ufw allow OpenSSH")
-    with open("/etc/sysctl.conf", "a+") as f:
+    run("apt upgrade -y")
+    run("apt install -y avahi-daemon btrfs-progs openssh-server python-is-python3 python3-pip wireguard zip")
+    with open("/etc/sysctl.conf", "a+") as f: # enable huge pages for local mining
         f.seek(0)
-        if "vm.nr_hugepages=3072\n" not in f.readlines():
-            f.write("vm.nr_hugepages=3072\n") # enable huge pages
+        if "vm.nr_hugepages=1280\n" not in f.readlines():
+            f.write("vm.nr_hugepages=1280\n")
+    file = Path("/etc/ssh/sshd_config.d/restrict.conf") # only allow public key login
+    if not file.exists():
+        with file.open("w") as f:
+            f.write("PasswordAuthentication no\n")
 
     # install docker and configure
     run("snap install docker")
     run("addgroup --system docker")
     run(f"adduser {os.getlogin()} docker")
-    run("snap disable docker")
-    run("snap enable docker")
     with open("/var/snap/docker/current/config/daemon.json", "r+") as f:
         cfg = json.load(f)
         cfg["ipv6"] = True
-        cfg["fixed-cidr-v6"] = "fd3a:138e:8fd0:0000::/64"
+        cfg["fixed-cidr-v6"] = "fd3a:138e:8fd0:0000::/64" # Docker ULA
         f.seek(0)
         json.dump(cfg, f, indent=4)
     run("systemctl restart snap.docker.dockerd.service")
+
+    # restrict network access from containers
+    file = Path("/etc/systemd/system/docker-restrict.service")
+    if not file.exists():
+        with file.open("w") as f:
+            f.writelines(s + "\n" for s in [
+                "[Unit]",
+                "Description=Restrict Docker network access",
+                "Before=network.target",
+                "After=network-pre.target",
+                "",
+                "[Service]",
+                "Type=oneshot",
+                "ExecStart=/opt/docker-restrict.sh",
+                "RemainAfterExit=yes",
+                "",
+                "[Install]",
+                "WantedBy=multi-user.target",
+            ])
+    file = Path("/opt/docker-restrict.sh")
+    if not file.exists():
+        with file.open("w") as f:
+            f.writelines(s + "\n" for s in [
+                "#!/bin/sh",
+                "iptables  -N DOCKER-USER || true",
+                "iptables  -I DOCKER-USER -p tcp --dport 22 -j DROP", # SSH
+                "ip6tables -N DOCKER-USER || true",
+                "ip6tables -I DOCKER-USER -p tcp --dport 22 -j DROP", # SSH
+            ])
+        file.chmod(0o755)
+    run("systemctl enable docker-restrict.service")
 
     # TODO modify /etc/crypttab instead once Ubuntu fixed
     file = Path("/etc/systemd/system/luks.service")

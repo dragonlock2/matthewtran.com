@@ -11,6 +11,7 @@ RUN pip3 install sendgrid --break-system-packages
 RUN rm /etc/nginx/sites-enabled/default
 
 # enable site
+# TODO make the website code not terrible ;-;
 COPY matthewtran.com /etc/nginx/sites-available
 RUN  ln -s /etc/nginx/sites-available/matthewtran.com /etc/nginx/sites-enabled/matthewtran.com
 COPY html /var/www/matthewtran.com/html

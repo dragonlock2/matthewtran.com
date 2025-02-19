@@ -2,19 +2,22 @@
 
 import hashlib
 import subprocess
+import sys
 
-ETH     = "enp5s0"
-IPV4    = "192.168.1.69"
+DP_LEN  = 64 # xfinity delegated prefix length
+WRT_ULA = "fd16:8f4d:f516::" # OpenWrt random
+WG_ULA  = "fd32:76a6:ec61:577a::" # WireGuard random
+IPV4    = "192.168.1.69" # OpenWrt default
 IPV6    = "69"
-WG_IPV4 = "192.168.2.1"
-WG_IPV6 = "fd32:76a6:ec61:577a::1"
+WG_IPV4 = "192.168.2.1" # WireGuard chosen
+WG_IPV6 = WG_ULA + "1"
 
 def run(cmds):
     # ssh-keygen -t ed25519
     subprocess.run(["ssh", "root@OpenWrt.lan", ";".join(cmds)], check=True)
 
-def mac():
-    return open(f"/sys/class/net/{ETH}/address", "r").read().strip()
+def mac(eth):
+    return open(f"/sys/class/net/{eth}/address", "r").read().strip()
 
 def duid():
     # adapted from https://github.com/mss/nm-duid
@@ -27,16 +30,21 @@ def key():
     return (pub.decode("utf-8"), priv.decode("utf-8"))
 
 if __name__ == "__main__":
-    # prevent access using WAN addresses
+    ETH = sys.argv[1] # e.g. enp5s0
+
+    # basic setup
     run([
+        f"uci set network.globals.ula_prefix='{WRT_ULA}/48'"
         "uci set dropbear.main.Interface='lan'",
+        "uci commit network",
+        "uci commit dropbear",
     ])
 
     # static IP
     run([
         "uci add dhcp host",
         "uci set dhcp.@host[-1].name='matt-ryzen'",
-        f"uci set dhcp.@host[-1].mac='{mac()}'",
+        f"uci set dhcp.@host[-1].mac='{mac(ETH)}'",
         f"uci set dhcp.@host[-1].ip='{IPV4}'",
         f"uci set dhcp.@host[-1].duid='{duid()}'",
         f"uci set dhcp.@host[-1].hostid='{IPV6}'",
@@ -75,7 +83,7 @@ if __name__ == "__main__":
             f"uci set firewall.@rule[-1].name='allow-{name}'",
             "uci set firewall.@rule[-1].src='wan'",
             "uci set firewall.@rule[-1].dest='lan'",
-            f"uci set firewall.@rule[-1].dest_ip='::{IPV6}/-64'", # xfinity provides /64 => /-64 match
+            f"uci set firewall.@rule[-1].dest_ip='::{IPV6}/{DP_LEN-128}'",
             f"uci set firewall.@rule[-1].dest_port='{PORTS[name]}'",
             "uci set firewall.@rule[-1].target='ACCEPT'",
         ])
@@ -85,6 +93,7 @@ if __name__ == "__main__":
     ])
 
     # wireguard setup
+    # TODO configure NAT66 to fix tunneling IPv6 traffic
     pub, priv = key()
     run([
         # install packages
