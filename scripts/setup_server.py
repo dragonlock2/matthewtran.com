@@ -24,6 +24,17 @@ if __name__ == "__main__":
     if not file.exists():
         with file.open("w") as f:
             f.write("PasswordAuthentication no\n")
+    try:
+        run("addgroup --gid 2000 web")
+        run("addgroup --gid 2001 monero")
+        run("addgroup --gid 2002 game")
+        run("addgroup --gid 2003 nas")
+        run(f"adduser {os.getlogin()} web")
+        run(f"adduser {os.getlogin()} monero")
+        run(f"adduser {os.getlogin()} game")
+        run(f"adduser {os.getlogin()} nas")
+    except:
+        pass
 
     # install docker and configure
     run("snap install docker")
@@ -61,6 +72,7 @@ if __name__ == "__main__":
             f.writelines(s + "\n" for s in [
                 "#!/bin/sh",
                 "iptables  -N DOCKER-USER || true",
+                "iptables  -I DOCKER-USER -d 10.0.0.0/8     -j DROP", # xfinity gateway
                 "iptables  -I DOCKER-USER -p tcp --dport 22 -j DROP", # SSH
                 "ip6tables -N DOCKER-USER || true",
                 "ip6tables -I DOCKER-USER -p tcp --dport 22 -j DROP", # SSH

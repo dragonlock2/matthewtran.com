@@ -1,6 +1,6 @@
 # matthewtran.com
 
-Stuff that's deployed on [matthewtran.com](https://matthewtran.com). Currently running the following services.
+Services deployed on [matthewtran.com](https://matthewtran.com).
 
 - website
 - gitea ([git.matthewtran.com](https://git.matthewtran.com))
@@ -8,8 +8,8 @@ Stuff that's deployed on [matthewtran.com](https://matthewtran.com). Currently r
 - p2pool (`xmrig -o matthewtran.com`)
 - wireguard
 - minecraft
-- ~~minecraft bedrock~~
-- ~~terraria~~
+- minecraft bedrock
+- terraria
 
 ## setup
 

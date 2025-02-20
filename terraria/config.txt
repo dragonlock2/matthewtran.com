@@ -1,6 +1,6 @@
-world=/home/ubuntu/worlds/legendary.wld
+world=/home/me/worlds/legendary.wld
 autocreate=3
 seed=getfixedboi
 worldname=legendary
 difficulty=2
-worldpath=/home/ubuntu/worlds
+worldpath=/home/me/worlds

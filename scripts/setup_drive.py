@@ -1,5 +1,7 @@
 #!/usr/bin/sudo /usr/bin/python3
 
+import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -27,7 +29,8 @@ if __name__ == "__main__":
     run(f"cryptsetup luksOpen --key-file={key} /dev/{drive} {drive}_luks")
     run(f"mkfs.btrfs /dev/mapper/{drive}_luks")
     run(f"mount /dev/mapper/{drive}_luks {mount}")
-    mount.chmod(0o777)
+    shutil.chown(mount, os.getlogin(), "nas")
+    mount.chmod(0o770)
 
     # TODO modify /etc/crypttab instead once Ubuntu fixed
     with open("/opt/luks.sh", "a") as f:

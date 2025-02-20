@@ -9,6 +9,5 @@ if __name__ == "__main__":
         "terraria/worlds",
         "terraria/password.txt",
         "website/gitea",
-        "website/certbot",
         "website/sendgrid.key",
     ], check=True)
