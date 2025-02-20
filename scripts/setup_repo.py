@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 
 if __name__ == "__main__":
-    # create folders in group "web" so containers have access
+    # create folders so containers have access
     PATHS = {
         "web": [
             "website/certbot",
@@ -25,3 +25,6 @@ if __name__ == "__main__":
         for p in PATHS[group]:
             Path(p).mkdir(parents=True, exist_ok=True)
             shutil.chown(p, group=group)
+
+    # TODO generate volumes to mount
+    # TODO generate users

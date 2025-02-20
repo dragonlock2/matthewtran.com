@@ -121,3 +121,13 @@ services:
       - ./terraria/worlds:/home/me/worlds
     cap_drop:
       - ALL
+  nas:
+    restart: always
+    build: nas/.
+    entrypoint: ["/bin/sh", "/home/me/entry.sh"]
+    ports:
+      - "445:8445"
+    networks:
+      - nas
+    cap_drop:
+      - ALL

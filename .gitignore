@@ -22,8 +22,9 @@ minecraft_bedrock/worlds*
 terraria/worlds
 terraria/password.txt
 
-# wireguard
-wireguard/*.conf
+# nas
+nas/mount.json
+nas/user.json
 
 # backup
 data.zip

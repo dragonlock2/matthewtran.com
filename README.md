@@ -10,6 +10,7 @@ Services deployed on [matthewtran.com](https://matthewtran.com).
 - minecraft
 - minecraft bedrock
 - terraria
+- nas (LAN only)
 
 ## setup
 
@@ -25,19 +26,19 @@ Services deployed on [matthewtran.com](https://matthewtran.com).
 5. Configure, build, and start services.
     - Create `website/sendgrid.key` with a [SendGrid API key](https://app.sendgrid.com/settings/api_keys).
     - Create `terraria/password.txt` if needed.
-    - Restore backups if needed.
     - `scripts/setup_repo.py`
+    - Restore backups if needed. Make sure to set correct ownership. For example, `chown -R 2000:2000 website/gitea`.
     - `docker compose build`
     - `docker compose up -d`
 6. Optionally, add additional drives. This script formats the drive as LUKS/BTRFS with the key file stored in `/opt/luks` and auto-mounts on boot. Make sure to backup the key file elsewhere.
     - `scripts/setup_drive.py <drive> <mount path>`
 7. Optionally, run `scripts/setup_peer.py <name>` for each WireGuard client.
 8. Optionally, add the following DNS entries at the registrar.
-    | hosts                   | type   | data                                  |
-    | ----------------------- | ------ | ------------------------------------- |
-    | `@`, `git`, `wg`, `www` | `A`    | `<public IPv4>`                       |
-    | `@`, `git`, `www`       | `AAAA` | `<delegated prefix>::<server suffix>` |
-    | `wg`                    | `AAAA` | `<delegated prefix>::1`               |
+    | hosts                   | type   | data                     |
+    | ----------------------- | ------ | ------------------------ |
+    | `@`, `git`, `wg`, `www` | `A`    | `<public IPv4>`          |
+    | `@`, `git`, `www`       | `AAAA` | `<delegated prefix>::69` |
+    | `wg`                    | `AAAA` | `<delegated prefix>::1`  |
 
 ## backup
 
