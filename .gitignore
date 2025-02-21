@@ -1,5 +1,6 @@
 .DS_Store
 __pycache__
+compose.override.yml
 
 # website
 website/gitea
@@ -23,8 +24,8 @@ terraria/worlds
 terraria/password.txt
 
 # nas
-nas/mount.json
-nas/user.json
+nas/*.json
+nas/users.sh
 
 # backup
 data.zip

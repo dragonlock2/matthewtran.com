@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import shutil
 from pathlib import Path
 
@@ -26,5 +27,23 @@ if __name__ == "__main__":
             Path(p).mkdir(parents=True, exist_ok=True)
             shutil.chown(p, group=group)
 
-    # TODO generate volumes to mount
-    # TODO generate users
+    # add users to nas
+    users = json.load(open("nas/users.json", "r"))
+    with open("nas/users.sh", "w") as f:
+        for id, user in enumerate(users):
+            id = 3000 + id
+            f.write(f"groupadd -g {id} {user}\n")
+            f.write(f"useradd -M -s /bin/false -u {id} -g {id} {user}\n")
+            f.write(f"su - me -c 'echo \"{users[user]}\\n{users[user]}\\n\" | pdbedit -s smb.conf -a {user}'\n")
+
+    # add volumes to nas
+    mounts = json.load(open("nas/mounts.json"))
+    with open("compose.override.yml", "w") as f:
+        if mounts:
+            f.writelines(s + "\n" for s in [
+                "services:",
+                "  nas:",
+                "    volumes:",
+            ] + [
+                f"      - {mounts[m]}:/home/me/share/{m}" for m in mounts
+            ])
