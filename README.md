@@ -45,3 +45,7 @@ Services deployed on [matthewtran.com](https://matthewtran.com).
 ## backup
 
 Run `scripts/backup.py` and save the resultant `data.zip` somewhere. I should probably automate this.
+
+## security
+
+To protect against vulnerabilities, all services run as non-root users inside containers that are on separate networks by function and have all capabilities dropped. These non-root users have a UID that doesn't exist on the host and a GID that maps to their function. Hopefully, even in the event of a full container compromise and root escalation, there is little damage an attacker can do. The main security hole left is containers accessing the LAN and host, AppArmor might help with this.

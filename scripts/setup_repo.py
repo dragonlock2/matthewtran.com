@@ -37,7 +37,7 @@ if __name__ == "__main__":
             f.write(f"su - me -c 'echo \"{users[user]}\\n{users[user]}\\n\" | pdbedit -s smb.conf -a {user}'\n")
 
     # add volumes to nas
-    mounts = json.load(open("nas/mounts.json"))
+    mounts = json.load(open("nas/mounts.json", "r"))
     with open("compose.override.yml", "w") as f:
         if mounts:
             f.writelines(s + "\n" for s in [
@@ -47,3 +47,12 @@ if __name__ == "__main__":
             ] + [
                 f"      - {mounts[m]}:/home/me/share/{m}" for m in mounts
             ])
+
+    # generate nas config
+    shutil.copyfile("nas/base.conf", "nas/smb.conf")
+    with open("nas/smb.conf", "a") as f:
+        if mounts:
+            for dest in mounts:
+                f.write(f"[{dest}]\n")
+                f.write(f"path = /home/me/share/{dest}\n")
+                f.write("\n")

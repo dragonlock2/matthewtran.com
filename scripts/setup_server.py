@@ -24,17 +24,6 @@ if __name__ == "__main__":
     if not file.exists():
         with file.open("w") as f:
             f.write("PasswordAuthentication no\n")
-    try:
-        run("addgroup --gid 2000 web")
-        run("addgroup --gid 2001 monero")
-        run("addgroup --gid 2002 game")
-        run("addgroup --gid 2003 nas")
-        run(f"adduser {os.getlogin()} web")
-        run(f"adduser {os.getlogin()} monero")
-        run(f"adduser {os.getlogin()} game")
-        run(f"adduser {os.getlogin()} nas")
-    except:
-        pass
 
     # install docker and configure
     run("snap install docker")
@@ -47,6 +36,18 @@ if __name__ == "__main__":
         f.seek(0)
         json.dump(cfg, f, indent=4)
     run("systemctl restart snap.docker.dockerd.service")
+
+    try:
+        run("addgroup --gid 2000 web")
+        run("addgroup --gid 2001 monero")
+        run("addgroup --gid 2002 game")
+        run("addgroup --gid 2003 nas")
+        run(f"adduser {os.getlogin()} web")
+        run(f"adduser {os.getlogin()} monero")
+        run(f"adduser {os.getlogin()} game")
+        run(f"adduser {os.getlogin()} nas")
+    except:
+        pass
 
     # restrict network access from containers
     file = Path("/etc/systemd/system/docker-restrict.service")

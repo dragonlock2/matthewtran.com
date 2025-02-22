@@ -25,6 +25,7 @@ terraria/password.txt
 
 # nas
 nas/*.json
+nas/smb.conf
 nas/users.sh
 
 # backup

@@ -81,6 +81,7 @@ if __name__ == "__main__":
             # IPv6 traffic rules
             "uci add firewall rule",
             f"uci set firewall.@rule[-1].name='allow-{name}'",
+            "uci set firewall.@rule[-1].family='ipv6'",
             "uci set firewall.@rule[-1].src='wan'",
             "uci set firewall.@rule[-1].dest='lan'",
             f"uci set firewall.@rule[-1].dest_ip='::{IPV6}/{DP_LEN-128}'",
