@@ -44,7 +44,11 @@ Services deployed on [matthewtran.com](https://matthewtran.com).
 
 ## backup
 
-Run `scripts/backup.py` and save the resultant `data.zip` somewhere. I should probably automate this.
+Run `scripts/backup.py` and save the resultant `data.zip` somewhere. Also run the following commands for BTRFS maintenance. I should probably automate this.
+```
+btrfs device stats <mount>
+btrfs scrub start -B <mount>
+```
 
 ## security
 
