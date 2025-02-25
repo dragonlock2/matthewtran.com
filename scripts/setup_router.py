@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     # basic setup
     run([
-        f"uci set network.globals.ula_prefix='{WRT_ULA}/48'"
+        f"uci set network.globals.ula_prefix='{WRT_ULA}/48'",
         "uci set dropbear.main.Interface='lan'",
         "uci commit network",
         "uci commit dropbear",

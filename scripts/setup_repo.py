@@ -30,6 +30,7 @@ if __name__ == "__main__":
     for group in PATHS:
         for p in PATHS[group]:
             Path(p).mkdir(parents=True, exist_ok=True)
+            Path(p).chmod(0o775)
             shutil.chown(p, user=os.getlogin(), group=group)
 
     # add users to nas
