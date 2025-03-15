@@ -8,7 +8,7 @@ trap 'cleanup' TERM
 
 rm cmd
 mkfifo cmd
-./TerrariaServer.bin.x86_64 -config config.txt -pass $(cat password.txt) < cmd &
+tail -f cmd | ./TerrariaServer.bin.x86_64 -config config.txt -pass $(cat password.txt) &
 echo "help\n" > cmd # shell waits for FIFO to be opened for writing before starting program!
 wait $! # wait for SIGTERM
 wait $! # wait for server to stop

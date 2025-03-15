@@ -8,7 +8,7 @@ Services deployed on [matthewtran.com](https://matthewtran.com).
 - p2pool (`xmrig -o matthewtran.com`)
 - minecraft
 - ~~minecraft bedrock~~
-- ~~terraria~~
+- terraria
 - nas (`<server>/<name>` on LAN)
 - wireguard
 

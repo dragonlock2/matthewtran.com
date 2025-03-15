@@ -109,18 +109,18 @@ services:
   #     - ./minecraft_bedrock/worlds:/home/me/worlds
   #   cap_drop:
   #     - ALL
-  # terraria:
-  #   restart: always
-  #   build: terraria/.
-  #   entrypoint: ["/bin/sh", "/home/me/entry.sh"]
-  #   ports:
-  #     - "7777:7777"
-  #   networks:
-  #     - game
-  #   volumes:
-  #     - ./terraria/worlds:/home/me/worlds
-  #   cap_drop:
-  #     - ALL
+  terraria:
+    restart: always
+    build: terraria/.
+    entrypoint: ["/bin/sh", "/home/me/entry.sh"]
+    ports:
+      - "7777:7777"
+    networks:
+      - game
+    volumes:
+      - ./terraria/worlds:/home/me/worlds
+    cap_drop:
+      - ALL
   nas:
     restart: always
     build: nas/.
