@@ -25,6 +25,7 @@ if __name__ == "__main__":
             "minecraft/worlds",
             "minecraft_bedrock/worlds",
             "terraria/worlds",
+            "terraria/mods",
         ]
     }
     for group in PATHS:

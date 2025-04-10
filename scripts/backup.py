@@ -10,6 +10,7 @@ if __name__ == "__main__":
         "minecraft/worlds",
         "minecraft_bedrock/worlds",
         "terraria/worlds",
+        "terraria/mods",
         "website/gitea",
     ], check=True)
     shutil.chown(out, os.getlogin(), os.getlogin())

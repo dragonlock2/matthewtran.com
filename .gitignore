@@ -21,6 +21,8 @@ minecraft_bedrock/worlds*
 
 # terraria
 terraria/worlds
+terraria/mods
+terraria/config.txt
 terraria/password.txt
 
 # nas

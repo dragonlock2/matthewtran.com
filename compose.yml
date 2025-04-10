@@ -119,6 +119,7 @@ services:
       - game
     volumes:
       - ./terraria/worlds:/home/me/worlds
+      - ./terraria/mods:/home/me/mods
     cap_drop:
       - ALL
   nas:

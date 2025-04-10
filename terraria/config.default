@@ -1,0 +1,15 @@
+# world file
+world=/home/me/worlds/master.wld
+
+# default options if no world
+autocreate=3
+worldname=poopy
+difficulty=2
+
+# server options
+motd=poopy
+worldpath=/home/me/worlds
+secure=1
+
+# tmodloader options
+modpath=/home/me/mods

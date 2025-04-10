@@ -25,7 +25,7 @@ Services deployed on [matthewtran.com](https://matthewtran.com).
 4. Reboot the router and server.
 5. Configure, build, and start services.
     - Create `website/sendgrid.key` with a [SendGrid API key](https://app.sendgrid.com/settings/api_keys).
-    - Create `terraria/password.txt` if needed.
+    - Create `terraria/config.txt` and `terraria/password.txt` if needed.
     - Create `nas/mounts.json` which contains a list of `"<name>":"<directory>"` for the SMB share.
     - Create `nas/users.json` which contains a list of `"<user>":"<password>"` for the SMB share.
     - `scripts/setup_repo.py`
