@@ -112,7 +112,7 @@ services:
   terraria:
     restart: always
     build: terraria/.
-    entrypoint: ["/bin/sh", "/home/me/entry.sh"]
+    entrypoint: ["/usr/bin/python3", "/home/me/entry.py"]
     ports:
       - "7777:7777"
     networks:
