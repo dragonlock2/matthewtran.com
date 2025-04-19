@@ -7,12 +7,23 @@ Services deployed on [matthewtran.com](https://matthewtran.com).
 - monerod
 - p2pool (`xmrig -o matthewtran.com`)
 - minecraft
-- ~~minecraft bedrock~~
+- minecraft bedrock
 - terraria
 - nas (`<server>/<name>` on LAN)
 - wireguard
 
 ## setup
+
+1. Designate one computer as the configuration server. Create `config/server.json` which contains the configuration for the server to be provisioned. Reference `config/server.default` for fields. Run the following.
+    - `scripts/provision.py`
+2. Create a [Fedora CoreOS](https://fedoraproject.org/coreos/download?stream=stable) installation media and boot it on the server to be provisioned. Run the following on it and reboot.
+    - `sudo coreos-installer install /dev/<boot drive> --ignition-url http://<config server ip>/server.ign --insecure-ignition`
+
+## update
+
+
+
+
 
 1. Install [Ubuntu Desktop 24.04.1 LTS](https://ubuntu.com/download/desktop) with TPM-backed FDE. Server currently has a [bug](https://bugs.launchpad.net/ubuntu/+source/cryptsetup/+bug/1980018) that makes TPM-backed FDE hard.
     - You may need to manually enable IPv6 on the network connection. Use `Automatic` not `Automatic, DHCP only`.

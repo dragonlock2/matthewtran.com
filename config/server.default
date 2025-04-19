@@ -1,0 +1,10 @@
+{
+    "core": {
+        "hostname": "<server name>",
+        "ssh_keys": [
+            "ssh-ed25519 AAAA..."
+        ],
+        "var_key": "<LUKS key>",
+        "var_wipe": false
+    }
+}
