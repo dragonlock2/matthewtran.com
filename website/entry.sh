@@ -2,10 +2,9 @@
 
 # get certs if needed
 certbot certonly --standalone \
-    --http-01-port 8080 \
-    --config-dir ~/certbot \
-    --work-dir ~/certbot/work \
-    --logs-dir ~/certbot/logs \
+    --config-dir /data \
+    --work-dir /data/work \
+    --logs-dir /data/logs \
     --non-interactive --agree-tos -m matthewlamtran@berkeley.edu \
     -d matthewtran.com \
     -d www.matthewtran.com \
@@ -14,16 +13,16 @@ certbot certonly --standalone \
 # background process to renew certs and check ip changes
 update() {
     certbot renew --quiet \
-        --config-dir ~/certbot \
-        --work-dir ~/certbot/work \
-        --logs-dir ~/certbot/logs
+        --config-dir /data \
+        --work-dir /data/work \
+        --logs-dir /data/logs
     sleep 86400
 }
 update &
-./ip_update.py &
+python3 ip.py &
 
 # run server
 nginx -c ~/server.conf
-trap 'echo "stopping website..."' TERM
+trap 'echo "stopping website..."' SIGTERM SIGINT
 tail -f /dev/null &
 wait $!

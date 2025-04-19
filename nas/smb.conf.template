@@ -1,6 +1,6 @@
 [global]
 workgroup = WORKGROUP
-smb ports = 8445
+smb ports = 445
 load printers = no
 disable spoolss = yes
 
@@ -22,19 +22,12 @@ client smb3 signing algorithms = AES-128-GMAC AES-128-CMAC HMAC-SHA256
 client signing = required
 client ipc signing = required
 
-lock directory = /home/me/samba/lock
-state directory = /home/me/samba/state
-cache directory = /home/me/samba/cache
-pid directory = /home/me/samba/pid
-private dir = /home/me/samba/private
-ncalrpc dir = /home/me/samba/ncalrpc
-
 browseable = yes
 writable = yes
 create mask = 0660
 directory mask = 0770
-force user = me
-force group = me
+force user = root
+force group = root
 
 vfs objects = fruit streams_xattr
 fruit:metadata = stream

@@ -20,7 +20,6 @@ hardcore=true
 hide-online-players=false
 initial-disabled-packs=
 initial-enabled-packs=vanilla
-level-name=worlds/main
 level-seed=
 level-type=minecraft\:normal
 max-chained-neighbor-updates=1000000

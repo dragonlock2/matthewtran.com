@@ -1,6 +1,6 @@
 #!/bin/sh
 
-smbd -s smb.conf -l=/home/me/samba/log
-trap 'echo "stopping smbd..."' TERM
+smbd -s smb.conf
+trap 'echo "stopping smbd..."' SIGTERM SIGINT
 tail -f /dev/null &
 wait $!

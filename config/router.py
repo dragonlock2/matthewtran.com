@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
+import argparse
 import hashlib
 import subprocess
-import sys
 
 DP_LEN  = 64 # xfinity delegated prefix length
 WRT_ULA = "fd16:8f4d:f516::" # OpenWrt random
@@ -30,7 +30,19 @@ def key():
     return (pub.decode("utf-8"), priv.decode("utf-8"))
 
 if __name__ == "__main__":
-    ETH = sys.argv[1] # e.g. enp5s0
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--provision", type=str, help="network interface to set static IP for, e.g. enp5s0")
+    args = parser.parse_args()
+
+    # update static IP
+    if args.provision is None:
+        run([
+            f"uci set dhcp.@host[0].duid='{duid()}'",
+            "uci commit dhcp",
+            "service dnsmasq restart",
+            "service odhcpd restart",
+        ])
+        exit(0)
 
     # basic setup
     run([
@@ -43,8 +55,7 @@ if __name__ == "__main__":
     # static IP
     run([
         "uci add dhcp host",
-        "uci set dhcp.@host[-1].name='matt-ryzen'",
-        f"uci set dhcp.@host[-1].mac='{mac(ETH)}'",
+        f"uci set dhcp.@host[-1].mac='{mac(args.provision)}'",
         f"uci set dhcp.@host[-1].ip='{IPV4}'",
         f"uci set dhcp.@host[-1].duid='{duid()}'",
         f"uci set dhcp.@host[-1].hostid='{IPV6}'",

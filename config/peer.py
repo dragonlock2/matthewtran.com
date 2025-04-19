@@ -3,7 +3,7 @@
 import subprocess
 import sys
 from ipaddress import ip_address, ip_network
-from setup_router import WG_IPV4, WG_IPV6, run, key
+from router import WG_IPV4, WG_IPV6, run, key
 
 def ips():
     try:

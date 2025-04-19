@@ -27,13 +27,13 @@ class Runner:
             logging.info(f"attempted connection from {addr}, starting server...")
 
             # start server
-            with open("/home/me/password.txt", "r") as f:
+            with open("/root/password.txt", "r") as f:
                 password = f.read()
             self.server = subprocess.Popen([
                 "/bin/bash",
-                "/home/me/server/start-tModLoaderServer.sh", 
+                "/root/server/start-tModLoaderServer.sh", 
                 "-nosteam",
-                "-config", "/home/me/config.txt",
+                "-config", "/root/config.txt",
                 "-pass", f"{password}",
             ], stdin=subprocess.PIPE, start_new_session=True)
             while not self.started():
