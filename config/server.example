@@ -1,0 +1,44 @@
+{
+    "core": {
+        "hostname": "<server name>",
+        "ssh_keys": [
+            "ssh-ed25519 AAAA..."
+        ],
+        "stash_key": "<LUKS key>",
+        "stash_wipe": false,
+        "data_dir": "/var/home/core/matthewtrancom_data"
+    },
+    "drives": [
+        {
+            "devices": ["/dev/sda"],
+            "key": "<LUKS key>",
+            "name": "stuff",
+            "wipe": false
+        }
+    ],
+    "website": {
+        "sendgrid_key": "<SendGrid API key from https://app.sendgrid.com/settings/api_keys>"
+    },
+    "minecraft": {
+        "world": "main"
+    },
+    "minecraft_bedrock": {
+        "world": "main"
+    },
+    "terraria": {
+        "password": "password",
+        "world": "main",
+        "autogen": {
+            "size": 3,
+            "difficulty": 2
+        }
+    },
+    "nas": {
+        "users": {
+            "matt": "password"
+        },
+        "mounts": {
+            "stuff": "/var/mnt/stuff"
+        }
+    }
+}

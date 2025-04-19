@@ -4,9 +4,8 @@ cleanup() {
     tmux send-keys stop Enter
 }
 
-trap 'cleanup' TERM
+trap 'cleanup' SIGTERM SIGINT
 
-rm log
 mkfifo log
 tmux new -d 'LD_LIBRARY_PATH=. ./bedrock_server > log'
 cat log &

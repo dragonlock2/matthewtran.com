@@ -3,6 +3,7 @@
 # check bitmonero.log for log
 monero/monerod \
     --prune-blockchain \
+    --data-dir /data \
     --rpc-bind-port 18089 \
     --rpc-restricted-bind-ip 0.0.0.0 \
     --rpc-restricted-bind-port 18081 \
@@ -17,6 +18,6 @@ monero/monerod \
 cleanup() {
     monero/monerod exit --rpc-bind-port 18089
 }
-trap 'cleanup' TERM
+trap 'cleanup' SIGTERM SIGINT
 tail -f /dev/null &
 wait $!

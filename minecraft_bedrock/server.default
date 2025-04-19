@@ -13,7 +13,6 @@ view-distance=32
 tick-distance=4
 player-idle-timeout=0
 max-threads=4
-level-name=test
 level-seed=
 default-player-permission-level=visitor
 texturepack-required=false
