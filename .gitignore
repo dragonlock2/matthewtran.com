@@ -10,7 +10,7 @@ config/*.ign
 config/*.iso
 
 # website
-website/sendgrid.key
+website/discord.txt
 
 # minecraft
 minecraft/server.properties

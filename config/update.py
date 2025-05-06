@@ -27,8 +27,8 @@ IMAGES = {
 
 def generate(cfg):
     # website
-    with open("website/sendgrid.key", "w") as f:
-        f.write(cfg["website"]["sendgrid_key"])
+    with open("website/discord.txt", "w") as f:
+        f.write(cfg["website"]["discord_hook"])
 
     # minecraft
     shutil.copy("minecraft/server.default", "minecraft/server.properties")

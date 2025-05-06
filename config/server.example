@@ -17,7 +17,7 @@
         }
     ],
     "website": {
-        "sendgrid_key": "<SendGrid API key from https://app.sendgrid.com/settings/api_keys>"
+        "discord_hook": "<Secret Discord Webhook>"
     },
     "minecraft": {
         "world": "main"
