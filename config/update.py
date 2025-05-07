@@ -11,9 +11,10 @@ IMAGES = {
         "website",
         "gitea",
     ],
-    "monero": [
+    "crypto": [
         "monerod",
         "p2pool",
+        "tari",
     ],
     "game": [
         "minecraft",

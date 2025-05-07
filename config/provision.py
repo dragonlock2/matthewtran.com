@@ -14,7 +14,7 @@ from update import SOURCE_DIR, IMAGES, generate
 
 UIDS = {
     "web"    : 1001,
-    "monero" : 1002,
+    "crypto" : 1002,
     "game"   : 1003,
     "nas"    : 1004,
 }
@@ -25,7 +25,7 @@ PORTS = {
         "443:443",
         "2222:22", # gitea
     ],
-    "monero": [
+    "crypto": [
         "18080:18080", # monerod
         "18081:18081",
         "3333:3333", # p2pool

@@ -6,6 +6,7 @@ Services deployed on [matthewtran.com](https://matthewtran.com).
 - gitea ([git.matthewtran.com](https://git.matthewtran.com))
 - monerod
 - p2pool (`xmrig -o matthewtran.com`)
+- tari
 - minecraft
 - minecraft bedrock
 - terraria

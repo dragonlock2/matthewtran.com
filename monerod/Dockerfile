@@ -5,7 +5,8 @@ RUN apt-get install -y wget bzip2
 
 WORKDIR /root
 
-RUN wget https://downloads.getmonero.org/cli/monero-linux-x64-v0.18.4.0.tar.bz2 -O monerod.tar.bz2
+# currently v0.18.4.0
+RUN wget -O monerod.tar.bz2 https://downloads.getmonero.org/cli/monero-linux-x64-v0.18.4.0.tar.bz2
 RUN tar xvf monerod.tar.bz2 && rm monerod.tar.bz2
 RUN mv monero-x86_64-linux-gnu-v0.18.4.0 monero
 
