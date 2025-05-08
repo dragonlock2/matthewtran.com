@@ -163,6 +163,7 @@ def add_packages():
                         "avahi",
                         "htop",
                         "python3",
+                        "tmux",
                         "vim",
                         "zip",
                     ]),

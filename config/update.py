@@ -14,7 +14,6 @@ IMAGES = {
     "crypto": [
         "monerod",
         "p2pool",
-        "tari",
     ],
     "game": [
         "minecraft",
