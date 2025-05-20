@@ -5,10 +5,10 @@ RUN apt-get install -y wget
 
 WORKDIR /root
 
-# currently v4.5
-RUN wget -O p2pool.tar.gz https://github.com/SChernykh/p2pool/releases/download/v4.5/p2pool-v4.5-linux-x64.tar.gz
+# currently v4.6
+RUN wget -O p2pool.tar.gz https://github.com/SChernykh/p2pool/releases/download/v4.6/p2pool-v4.6-linux-x64.tar.gz
 RUN tar xvf p2pool.tar.gz && rm p2pool.tar.gz
-RUN mv p2pool-v4.5-linux-x64/p2pool ./p2pool
+RUN mv p2pool-v4.6-linux-x64/p2pool ./p2pool
 
 COPY entry.sh ./
 
