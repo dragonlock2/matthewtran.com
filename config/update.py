@@ -17,7 +17,7 @@ IMAGES = {
     ],
     "game": [
         "minecraft",
-        "minecraft_bedrock",
+        # "minecraft_bedrock",
         "terraria",
     ],
     "nas": [
