@@ -5,10 +5,10 @@ RUN apt-get install -y wget
 
 WORKDIR /root
 
-# currently v4.8.1
-RUN wget -O p2pool.tar.gz https://github.com/SChernykh/p2pool/releases/download/v4.8.1/p2pool-v4.8.1-linux-x64.tar.gz
+# currently v4.9
+RUN wget -O p2pool.tar.gz https://github.com/SChernykh/p2pool/releases/download/v4.9/p2pool-v4.9-linux-x64.tar.gz
 RUN tar xvf p2pool.tar.gz && rm p2pool.tar.gz
-RUN mv p2pool-v4.8.1-linux-x64/p2pool ./p2pool
+RUN mv p2pool-v4.9-linux-x64/p2pool ./p2pool
 
 COPY entry.sh ./
 
