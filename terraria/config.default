@@ -4,7 +4,7 @@ worldname=poopy
 # server options
 motd=poopy
 worldpath=/data/worlds
-secure=1
+secure=0
 
 # tmodloader options
 modpath=/data/mods
