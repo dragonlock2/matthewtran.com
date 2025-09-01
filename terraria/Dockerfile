@@ -5,8 +5,8 @@ RUN apt-get install -y wget unzip python3 iproute2 dotnet-runtime-8.0
 
 WORKDIR /root
 
-# from https://github.com/tModLoader/tModLoader/releases (currently v2025.06.3.0)
-RUN wget https://github.com/tModLoader/tModLoader/releases/download/v2025.06.3.0/tModLoader.zip
+# from https://github.com/tModLoader/tModLoader/releases (currently v2025.07.3.0)
+RUN wget https://github.com/tModLoader/tModLoader/releases/download/v2025.07.3.0/tModLoader.zip
 RUN unzip tModLoader.zip -d server && rm tModLoader.zip
 
 RUN chmod +x server/start-tModLoaderServer.sh
