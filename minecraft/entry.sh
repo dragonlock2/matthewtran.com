@@ -6,6 +6,6 @@ cleanup() {
 
 trap 'cleanup' SIGTERM SIGINT
 
-java -Xmx1024M -Xms1024M -jar server.jar nogui &
+java -Xmx16G -Xms16G -jar server.jar nogui &
 wait $! # wait for SIGTERM
 wait $! # wait for server to stop
