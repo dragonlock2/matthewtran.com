@@ -167,6 +167,7 @@ def add_packages():
                         "htop",
                         "python3",
                         "seatd",
+                        "sway",
                         "tmux",
                         "vim",
                         "weston",
