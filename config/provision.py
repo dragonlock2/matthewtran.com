@@ -163,6 +163,7 @@ def add_packages():
                     "ExecStart=/usr/bin/rpm-ostree install -y --allow-inactive " + " ".join([
                         "alsa-utils",
                         "avahi",
+                        "chromium",
                         "firefox",
                         "htop",
                         "python3",
