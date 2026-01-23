@@ -6,7 +6,8 @@
         ],
         "stash_key": "<LUKS key>",
         "stash_wipe": false,
-        "data_dir": "/var/home/core/matthewtrancom_data"
+        "data_dir": "/var/mnt/stash/data",
+        "tv_passwd": "password"
     },
     "drives": [
         {

@@ -17,6 +17,7 @@ UIDS = {
     "crypto" : 1002,
     "game"   : 1003,
     "nas"    : 1004,
+    "tv"     : 1005,
 }
 
 PORTS = {
@@ -41,6 +42,7 @@ PORTS = {
     "nas": [
         "445:445", # nas
     ],
+    "tv": [],
 }
 
 def check_keys():
@@ -142,10 +144,9 @@ def add_more_drive():
         })
 
 def add_packages():
-    # TODO update once done https://github.com/coreos/fedora-coreos-tracker/issues/681
     but["systemd"] = {
         "units": [
-            {
+            { # TODO update once done https://github.com/coreos/fedora-coreos-tracker/issues/681
                 "name": "rpm-ostree-install.service",
                 "enabled": True,
                 "contents": "\n".join([
@@ -158,17 +159,41 @@ def add_packages():
                     "[Service]",
                     "Type=oneshot",
                     "RemainAfterExit=yes",
-                    f"ExecStart=/usr/bin/usermod -a -G {",".join(UIDS.keys())} core", 
+                    f"ExecStart=/usr/bin/usermod -aG {",".join(UIDS.keys())} core",
                     "ExecStart=/usr/bin/rpm-ostree install -y --allow-inactive " + " ".join([
+                        "alsa-utils",
                         "avahi",
+                        "firefox",
                         "htop",
                         "python3",
+                        "seatd",
                         "tmux",
                         "vim",
+                        "weston",
                         "zip",
                     ]),
                     "ExecStart=/bin/touch /etc/rpm/%N.stamp",
                     "ExecStart=/bin/systemctl --no-block reboot",
+                    "[Install]",
+                    "WantedBy=multi-user.target",
+                ]),
+            },
+            { # TODO update once done https://github.com/coreos/rpm-ostree/issues/49
+                "name": "post-rpm-ostree-install.service",
+                "enabled": True,
+                "contents": "\n".join([
+                    "[Unit]",
+                    "Description=Post package install setup",
+                    "After=local-fs.target",
+                    "ConditionPathExists=/etc/rpm/rpm-ostree-install.stamp",
+                    "ConditionPathExists=!/etc/rpm/%N.stamp",
+                    "[Service]",
+                    "Type=oneshot",
+                    "RemainAfterExit=yes",
+                    "ExecStart=/usr/bin/sh -c 'grep -E \"^(audio|seat|video):\" /usr/lib/group >> /etc/group'",
+                    "ExecStart=/usr/bin/usermod -aG audio,seat,video tv",
+                    "ExecStart=/usr/bin/systemctl enable --now seatd",
+                    "ExecStart=/bin/touch /etc/rpm/%N.stamp",
                     "[Install]",
                     "WantedBy=multi-user.target",
                 ]),
@@ -201,6 +226,14 @@ def allow_port_access():
         "contents": { "inline": "net.ipv4.ip_unprivileged_port_start=80" },
     })
 
+def allow_nouveau():
+    but["storage"]["files"].append({
+        "path": "/etc/modprobe.d/blacklist-nouveau.conf",
+        "mode": 0o644,
+        "overwrite": True,
+        "contents": { "inline": "" }
+    })
+
 def add_users():
     for user in UIDS:
         but["passwd"]["users"].append({
@@ -212,6 +245,10 @@ def add_users():
             "path": f"/var/lib/systemd/linger/{user}",
             "contents": { "inline": "" },
         })
+        if user == "tv":
+            but["passwd"]["users"][-1]["password_hash"] = subprocess.run(
+                ["docker", "run", "-it", "--rm", "quay.io/coreos/mkpasswd", "--method=yescrypt", cfg["core"]["tv_passwd"]],
+                capture_output=True, text=True, check=True).stdout.strip()
 
 def copy_source():
     but["storage"]["directories"].append({
@@ -372,6 +409,7 @@ if __name__ == "__main__":
     add_ssh_keys()
     set_hostname()
     allow_port_access()
+    allow_nouveau()
 
     # server setup
     add_users()

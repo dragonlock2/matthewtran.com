@@ -23,6 +23,7 @@ IMAGES = {
     "nas": [
         "nas",
     ],
+    "tv": [],
 }
 
 def generate(cfg):
@@ -85,6 +86,8 @@ if __name__ == "__main__":
 
     # run builds
     for user in IMAGES:
+        if not IMAGES[user]:
+            continue
         print(f"building images for {user}...")
         run([f"cd {SOURCE_DIR}"] + [
             f"sudo -u {user} podman build --tag {i} {SOURCE_DIR}/{i}"
@@ -93,6 +96,8 @@ if __name__ == "__main__":
 
     # restart pods
     for user in IMAGES:
+        if not IMAGES[user]:
+            continue
         print(f"restarting pod for {user}...")
         run([
             f"cd {SOURCE_DIR}",
