@@ -165,6 +165,7 @@ def add_packages():
                         "avahi",
                         "chromium",
                         "firefox",
+                        "flatpak",
                         "htop",
                         "python3",
                         "seatd",
