@@ -1,12 +1,12 @@
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 RUN apt-get update && apt-get -y upgrade
 RUN apt-get install -y wget unzip curl tmux
 
 WORKDIR /root
 
-# from https://www.minecraft.net/en-us/download/server/bedrock (currently 1.21.82.1)
-RUN wget -O server.zip --user-agent "Mozilla/5.0" https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.21.82.1.zip
+# from https://www.minecraft.net/en-us/download/server/bedrock (currently 1.26.23.1)
+RUN wget -O server.zip --user-agent "Mozilla/5.0" https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.26.23.1.zip
 RUN unzip server.zip && rm server.zip
 
 COPY entry.sh ./

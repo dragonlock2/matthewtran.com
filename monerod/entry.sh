@@ -17,5 +17,5 @@ cleanup() {
     monero/monerod exit --rpc-bind-port 18089
 }
 trap 'cleanup' SIGTERM SIGINT
-tail -f /dev/null &
+sleep infinity &
 wait $!

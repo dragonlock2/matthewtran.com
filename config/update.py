@@ -90,16 +90,13 @@ if __name__ == "__main__":
             continue
         print(f"building images for {user}...")
         run([f"cd {SOURCE_DIR}"] + [
-            f"sudo -u {user} podman build --tag {i} {SOURCE_DIR}/{i}"
+            f"podman build --tag {i} {SOURCE_DIR}/{i}"
             for i in IMAGES[user]
-        ])
+        ], user=user)
 
     # restart pods
     for user in IMAGES:
         if not IMAGES[user]:
             continue
         print(f"restarting pod for {user}...")
-        run([
-            f"cd {SOURCE_DIR}",
-            f"sudo systemctl --machine={user}@.host --user restart {user}-pod " + " ".join(IMAGES[user]),
-        ])
+        run([f"systemctl --user restart {user}-pod " + " ".join(IMAGES[user])], user=user)

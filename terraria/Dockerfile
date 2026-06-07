@@ -1,12 +1,17 @@
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 RUN apt-get update && apt-get -y upgrade
-RUN apt-get install -y wget unzip python3 iproute2 dotnet-runtime-8.0
+RUN apt-get install -y wget unzip python3 iproute2
+
+# .NET 8.0 not available by default in 26.04
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository ppa:dotnet/backports
+RUN apt-get install -y dotnet-runtime-8.0
 
 WORKDIR /root
 
-# from https://github.com/tModLoader/tModLoader/releases (currently v2025.11.3.0)
-RUN wget https://github.com/tModLoader/tModLoader/releases/download/v2025.11.3.0/tModLoader.zip
+# from https://github.com/tModLoader/tModLoader/releases (currently v2026.04.3.0)
+RUN wget https://github.com/tModLoader/tModLoader/releases/download/v2026.04.3.0/tModLoader.zip
 RUN unzip tModLoader.zip -d server && rm tModLoader.zip
 
 RUN chmod +x server/start-tModLoaderServer.sh

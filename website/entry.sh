@@ -24,5 +24,5 @@ python3 ip.py &
 # run server
 nginx -c ~/server.conf
 trap 'echo "stopping website..."' SIGTERM SIGINT
-tail -f /dev/null &
+sleep infinity &
 wait $!
