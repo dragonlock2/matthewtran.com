@@ -9,8 +9,8 @@ WORKDIR /root
 RUN wget -O rcon-cli.tar.gz https://github.com/itzg/rcon-cli/releases/download/1.7.5/rcon-cli_1.7.5_linux_amd64.tar.gz
 RUN tar xvf rcon-cli.tar.gz && rm rcon-cli.tar.gz
 
-# from https://www.minecraft.net/en-us/download/server (currently 26.1.2)
-RUN wget https://piston-data.mojang.com/v1/objects/97ccd4c0ed3f81bbb7bfacddd1090b0c56f9bc51/server.jar
+# from https://www.minecraft.net/en-us/download/server (currently 26.2)
+RUN wget https://piston-data.mojang.com/v1/objects/823e2250d24b3ddac457a60c92a6a941943fcd6a/server.jar
 
 COPY entry.sh ./
 COPY eula.txt ./
