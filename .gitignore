@@ -3,6 +3,13 @@ __pycache__
 *.bak
 *.zip
 
+# bootc
+bootc/Containerfile
+bootc/*.bu
+bootc/*.ign
+bootc/*.yaml
+
+
 # config
 config/server.json
 config/*.bu

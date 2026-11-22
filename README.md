@@ -1,5 +1,34 @@
 # matthewtran.com
 
+TODO host insecure registry
+    switch to custom bootc image
+        inject ssh keys to core
+        make sudoers nopasswd
+        disable bootc and podman auto updates
+    fix failed services
+        /boot is in coreos but not in bootc?
+        bootloader-update.service? this probs how bootc adds new ones?
+        rpm-ostreed.service?
+TODO host registry with HTTPS and pull-only user on CoreOS side
+    push user is uses dynamic password tbh to push images? if too slow need persistent registry
+TODO update script builds bootc and apps in local registry and instructs server to update
+    default: builds from scratch no cache and updates bootc and apps (run every 2 weeks)
+        --fast: builds with cache and updates bootc and apps (needed if os config changes)
+        --apps: builds with cache and update apps only
+
+TODO update all but make gitea empty and delete the folder
+TODO update backup.py
+
+TODO delete minecraft bedrock and terraria
+TODO move to forgejo
+
+TODO reload entire server from backup (make sure only minecraft there)
+TODO regularly update this repo and rebuild containers from scratch
+TODO subscribe to email lists...
+TODO add cpu usage monitor
+
+
+
 Services deployed on [matthewtran.com](https://matthewtran.com).
 
 - website
@@ -7,10 +36,20 @@ Services deployed on [matthewtran.com](https://matthewtran.com).
 - monerod
 - p2pool (`xmrig -o matthewtran.com`)
 - minecraft
-- ~~minecraft bedrock~~
-- terraria
 - nas (`<server>/<name>` on LAN)
 - wireguard
+
+## setup
+
+1. Download the [CoreOS Live DVD ISO](https://fedoraproject.org/coreos/download).
+2. Create `bootc/config.yaml` and run `bootc/bootstrap.py`. Boot the resulting ISO. After enough installs the TPM may need to be cleared.
+
+
+
+
+
+
+
 
 ## setup
 

@@ -1,0 +1,7 @@
+core:
+  hostname: <server name>
+  ssh_keys:
+  - ssh-ed25519 AAAA...
+  stash:
+    key: <LUKS key>
+    wipe: true # must be true on fresh install
