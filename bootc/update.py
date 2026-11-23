@@ -55,36 +55,71 @@ class Registry:
         subprocess.check_output(["podman", "stop", f"{IMAGE_PREFIX}-registry"])
 
 def generate_bootc():
-    cf = ["FROM --platform=linux/amd64 quay.io/fedora/fedora-bootc:latest"]
+    cf = [
+        "FROM --platform=linux/amd64 quay.io/fedora/fedora-bootc:latest",
+        "RUN dnf install -y " + " ".join([
+            "avahi-tools",
+            "htop",
+            "pciutils",
+            "tmux",
+            "usbutils",
+            "vim",
+            "zip",
+        ]) + " && dnf clean all && rm -rf /run/dnf /var/log/* /var/cache/* /var/lib/dnf",
+        "RUN systemctl mask bootc-fetch-apply-updates.timer", # disable bootc auto update
+        # TODO mask podman timer?
+    ]
 
-    # update core user (reusing from CoreOS)
+    # set hostname (no writing to /etc/hostname in podman and no hostnamectl D:)
+    with open("bootc/build/hostname.conf", "w") as f:
+        f.write(f"f+ /etc/hostname 0644 root root - {cfg["core"]["hostname"]}")
+    cf.append("COPY build/hostname.conf /usr/lib/tmpfiles.d")
+
+    # TODO check mdns => use lower case address... issues on linux...
+    
+    # TODO enable nouveau
+
+    # mount /boot (fixing from CoreOS)
+    with open("bootc/build/boot.mount", "w") as f:
+        f.write("\n".join([
+            "[Unit]",
+            "Description=bootc mount for /boot",
+            "Before=local-fs.target",
+            r"Requires=systemd-fsck@dev-disk-by\x2dpartlabel-boot.service",
+            r"After=systemd-fsck@dev-disk-by\x2dpartlabel-boot.service",
+            "[Mount]",
+            "What=/dev/disk/by-partlabel/boot",
+            "Where=/boot",
+            "Options=ro,nodev,nosuid",
+        ]))
+    cf.append("COPY build/boot.mount /etc/systemd/system")
+
+    # create core user (reusing from CoreOS)
     keys = "\n".join(cfg["core"]["ssh_keys"]).encode("utf-8")
     with open(f"bootc/build/files-core.conf", "w") as f:
-        nopass = b"%sudo ALL=(ALL) NOPASSWD: ALL"
-        print(f"f+~ /var/home/core/.ssh/authorized_keys 0600 core core - {base64.b64encode(keys).decode("utf-8")}", file=f)
-        print(f"f+~ /etc/sudoers.d/core-sudo-group 0440 root root - {base64.b64encode(nopass).decode("utf-8")}", file=f)
+        f.write(f"f+~ /var/home/core/.ssh/authorized_keys 0600 core core - {base64.b64encode(keys).decode("utf-8")}")
     cf.append("COPY build/files-core.conf /usr/lib/tmpfiles.d")
+    cf.append("RUN echo \"%sudo ALL=(ALL) NOPASSWD: ALL\" > /etc/sudoers.d/core-sudo-group")
 
     # create users
     for user in UIDS:
         # NOTE removing user does not remove old home directory
         with open(f"bootc/build/user-{user}.conf", "w") as f:
-            print(f"u {user} {UIDS[user]} \"\" /var/home/{user} /bin/bash", file=f)
+            f.write(f"u {user} {UIDS[user]} \"\" /var/home/{user} /bin/bash")
         with open(f"bootc/build/files-{user}.conf", "w") as f:
-            print(f"d /var/home/{user} 0700 {user} {user} - -", file=f)
-            print(f"d /var/home/{user}/.ssh 0700 {user} {user} - -", file=f)
-            print(f"f+~ /var/home/{user}/.ssh/authorized_keys 0600 {user} {user} - {base64.b64encode(keys).decode("utf-8")}", file=f)
+            f.write("\n".join([
+                f"d /var/home/{user} 0700 {user} {user} - -",
+                f"d /var/home/{user}/.ssh 0700 {user} {user} - -",
+                f"f+~ /var/home/{user}/.ssh/authorized_keys 0600 {user} {user} - {base64.b64encode(keys).decode("utf-8")}",
+            ]))
         cf.append(f"COPY build/user-{user}.conf /usr/lib/sysusers.d")
         cf.append(f"COPY build/files-{user}.conf /usr/lib/tmpfiles.d")
 
-    # TODO fix failed services /boot? check all the services tbh
-    # TODO disable auto updates
     # TODO add quadlets
 
     cf.append("RUN bootc container lint --fatal-warnings")
     with open("bootc/Containerfile", "w") as f:
-        for l in cf:
-            print(l, file=f)
+        f.write("\n".join(cf))
 
 def update():
     if args.provision:
