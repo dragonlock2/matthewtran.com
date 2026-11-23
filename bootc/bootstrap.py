@@ -9,6 +9,7 @@ import socket
 import socketserver
 import subprocess
 import yaml # pip install PyYAML
+from pathlib import Path
 
 def check_keys():
     if "key" not in cfg["core"]["stash"]:
@@ -104,18 +105,20 @@ if __name__ == "__main__":
     add_ssh_keys()
     # TODO copy root CA and login for bootc switch
     # TODO automate bootc switch
-        # bootc switch quay.io/fedora/fedora-bootc:latest
+        # sudo podman pull --tls-verify=false me:5001/matt-bootc:latest
+        # sudo bootc switch --transport containers-storage me:5001/matt-bootc:latest
 
     # generate ignition file
-    with open("bootc/config.bu", "w") as f:
+    Path("bootc/build").mkdir(exist_ok=True)
+    with open("bootc/build/config.bu", "w") as f:
         f.write(yaml.dump(but, sort_keys=False))
-    subprocess.check_output(["butane", "-s", "-o", "bootc/config.ign", "bootc/config.bu"])
+    subprocess.check_output(["butane", "-s", "-o", "bootc/build/config.ign", "bootc/build/config.bu"])
 
     # host ignition file
     if args.insecure:
         print(f"Run \"sudo coreos-installer install /dev/<boot drive> --ignition-url http://{socket.gethostname()}/config.ign --insecure-ignition\"")
         print("Starting HTTP server, Ctrl-C to exit...")
-        os.chdir("bootc")
+        os.chdir("bootc/build")
         with socketserver.TCPServer(("", 80), http.server.SimpleHTTPRequestHandler) as httpd:
             httpd.serve_forever()
     else:

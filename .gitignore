@@ -5,8 +5,7 @@ __pycache__
 
 # bootc
 bootc/Containerfile
-bootc/*.bu
-bootc/*.ign
+bootc/build
 bootc/*.yaml
 
 
