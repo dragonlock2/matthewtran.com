@@ -1,8 +1,9 @@
 # matthewtran.com
 
-TODO host registry with HTTPS and pull-only user on CoreOS side
+TODO make sure only root can access bootc image
+TODO make sure only root/core can access podman pulls
 TODO update script builds bootc and apps in local registry and instructs server to update
-    default: builds from scratch no cache, pull base images again, and updates bootc and apps (run every 2 weeks)
+    default: repulls base images, clear build cache, clear registry volume and updates bootc and apps (run every 2 weeks)
     --fast: builds with cache and updates bootc and apps (needed if os config changes)
     --apps: builds with cache and update apps only
     --provision: doesn't ssh in and run bootc update

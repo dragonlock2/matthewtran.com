@@ -1,4 +1,5 @@
 core:
+  registry: workstation.local # scutil --get LocalHostName
   hostname: <server name>
   ssh_keys:
   - ssh-ed25519 AAAA...

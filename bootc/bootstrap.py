@@ -10,6 +10,7 @@ import socketserver
 import subprocess
 import yaml # pip install PyYAML
 from pathlib import Path
+from update import Registry
 
 def check_keys():
     if "key" not in cfg["core"]["stash"]:
@@ -91,9 +92,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if not args.insecure and args.iso is None:
         parser.error("the following arguments are required: --iso")
+    cfg = yaml.safe_load(open("bootc/config.yaml"))
+    Path("bootc/build").mkdir(exist_ok=True)
+    Registry.generate_keys(cfg)
 
     # generate butane file
-    cfg = yaml.safe_load(open("bootc/config.yaml"))
     but = {
         "variant": "fcos",
         "version": "1.7.0",
@@ -109,7 +112,6 @@ if __name__ == "__main__":
         # sudo bootc switch --transport containers-storage me:5001/matt-bootc:latest
 
     # generate ignition file
-    Path("bootc/build").mkdir(exist_ok=True)
     with open("bootc/build/config.bu", "w") as f:
         f.write(yaml.dump(but, sort_keys=False))
     subprocess.check_output(["butane", "-s", "-o", "bootc/build/config.ign", "bootc/build/config.bu"])

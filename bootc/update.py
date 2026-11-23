@@ -2,12 +2,15 @@
 
 import argparse
 import base64
+import json
+import secrets
 import subprocess
 import time
 import yaml # pip install PyYAML
 from pathlib import Path
 
 IMAGE_PREFIX = "matt"
+REGISTRY_PORT = 5001
 
 UIDS = {
     "web"    : 1001,
@@ -35,7 +38,29 @@ IMAGES = {
 }
 
 class Registry:
-    # TODO secure with TLS, pull-only user for bootc, push from localhost only?
+    @staticmethod
+    def generate_keys(cfg):
+        cert_dir = Path("bootc/certs")
+        cert_dir.mkdir(exist_ok=True)
+        if not (cert_dir / "domain.key").exists():
+            subprocess.check_output(["openssl", "req",
+                "-newkey", "rsa:4096", "-nodes", "-sha256", "-keyout", str(cert_dir / "domain.key"),
+                "-addext", f"subjectAltName = DNS:{cfg["core"]["registry"]}",
+                "-subj", f"/CN={cfg["core"]["registry"]}",
+                "-x509", "-days", "36500", "-out", str(cert_dir / "domain.crt"),
+            ])
+        if not (cert_dir / "pass.txt").exists():
+            password = secrets.token_urlsafe(32)
+            (cert_dir / "pass.txt").write_text(password)
+            (cert_dir / "htpasswd").write_bytes(subprocess.check_output(["htpasswd", "-bnB", "core", password]))
+            (cert_dir / "auth.json").write_text(json.dumps({
+                "auths": {
+                    f"{cfg["core"]["registry"]}:{REGISTRY_PORT}": {
+                        "auth": base64.b64encode(f"core:{password}".encode("utf-8")).decode("utf-8")
+                    }
+                }
+            }, indent=4))
+
     def build(self, user, image):
         if user is None:
             tag = f"{IMAGE_PREFIX}-{image}"
@@ -43,12 +68,24 @@ class Registry:
         else:
             tag = f"{IMAGE_PREFIX}-{user}-{image}"
             subprocess.run(["podman", "build", "--tag", tag, f"{user}/{image}"], check=True)
-        subprocess.check_output(["podman", "push", "--tls-verify=false", tag, f"localhost:5001/{tag}"], stderr=subprocess.STDOUT)
+        subprocess.run(["podman", "push", "--authfile=bootc/certs/auth.json", "--tls-verify=false",
+            tag, f"{cfg["core"]["registry"]}:{REGISTRY_PORT}/{tag}"], check=True)
 
     def __enter__(self):
+        self.generate_keys(cfg)
         subprocess.check_output(["podman", "volume", "create", "--ignore", f"{IMAGE_PREFIX}-registry"])
-        subprocess.check_output(["podman", "run", "--rm", "-d", "--name", f"{IMAGE_PREFIX}-registry",
-            "-v", f"{IMAGE_PREFIX}-registry:/var/lib/registry", "-p", "5001:5000", "registry"])
+        subprocess.check_output(["podman", "run", "--rm", "-d",
+            "-p", f"{REGISTRY_PORT}:5000",
+            "-v", f"{IMAGE_PREFIX}-registry:/var/lib/registry",
+            "-v", "./bootc/certs:/certs:ro",
+            "-e", f"REGISTRY_HTTP_ADDR=0.0.0.0:5000",
+            "-e", "REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt",
+            "-e", "REGISTRY_HTTP_TLS_KEY=/certs/domain.key",
+            "-e", "REGISTRY_AUTH=htpasswd",
+            "-e", "REGISTRY_AUTH_HTPASSWD_REALM=You Shall Not Pass",
+            "-e", "REGISTRY_AUTH_HTPASSWD_PATH=/certs/htpasswd",
+            "--name", f"{IMAGE_PREFIX}-registry", "registry",
+        ])
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -70,54 +107,56 @@ def generate_bootc():
         "RUN rm -rf /run/dnf /var/log/* /var/cache/* /var/lib/dnf /var/lib/authselect/checksum",
         "RUN systemctl mask bootc-fetch-apply-updates.timer", # disable bootc auto update
         # TODO mask podman timer?
+        f"COPY certs/domain.crt /etc/containers/certs.d/{cfg["core"]["registry"]}:{REGISTRY_PORT}/domain.crt",
+        "COPY --chmod=0600 certs/auth.json /usr/lib/ostree/auth.json", # password for registry so keep super secure!
     ]
 
     # set hostname (no writing to /etc/hostname in podman and no hostnamectl D:)
-    with open("bootc/build/hostname.conf", "w") as f:
-        f.write(f"f+ /etc/hostname 0644 root root - {cfg["core"]["hostname"]}")
+    Path("bootc/build/hostname.conf").write_text("\n".join([
+        f"f+ /etc/hostname 0644 root root - {cfg["core"]["hostname"]}",
+    ]))
     cf.append("COPY build/hostname.conf /usr/lib/tmpfiles.d")
 
     # mount /boot (fixing from CoreOS)
-    with open("bootc/build/boot.mount", "w") as f:
-        f.write("\n".join([
-            "[Unit]",
-            "Description=bootc mount for /boot",
-            "Before=local-fs.target",
-            r"Requires=systemd-fsck@dev-disk-by\x2dpartlabel-boot.service",
-            r"After=systemd-fsck@dev-disk-by\x2dpartlabel-boot.service",
-            "[Mount]",
-            "What=/dev/disk/by-partlabel/boot",
-            "Where=/boot",
-            "Options=ro,nodev,nosuid",
-        ]))
+    Path("bootc/build/boot.mount").write_text("\n".join([
+        "[Unit]",
+        "Description=bootc mount for /boot",
+        "Before=local-fs.target",
+        r"Requires=systemd-fsck@dev-disk-by\x2dpartlabel-boot.service",
+        r"After=systemd-fsck@dev-disk-by\x2dpartlabel-boot.service",
+        "[Mount]",
+        "What=/dev/disk/by-partlabel/boot",
+        "Where=/boot",
+        "Options=ro,nodev,nosuid",
+    ]))
     cf.append("COPY build/boot.mount /etc/systemd/system")
 
     # create core user (reusing from CoreOS)
     keys = "\n".join(cfg["core"]["ssh_keys"]).encode("utf-8")
-    with open(f"bootc/build/files-core.conf", "w") as f:
-        f.write(f"f+~ /var/home/core/.ssh/authorized_keys 0600 core core - {base64.b64encode(keys).decode("utf-8")}")
+    Path(f"bootc/build/files-core.conf").write_text("\n".join([
+        f"f+~ /var/home/core/.ssh/authorized_keys 0600 core core - {base64.b64encode(keys).decode("utf-8")}",
+    ]))
     cf.append("COPY build/files-core.conf /usr/lib/tmpfiles.d")
     cf.append("RUN echo \"%sudo ALL=(ALL) NOPASSWD: ALL\" > /etc/sudoers.d/core-sudo-group")
 
     # create users
     for user in UIDS:
         # NOTE removing user does not remove old home directory
-        with open(f"bootc/build/user-{user}.conf", "w") as f:
-            f.write(f"u {user} {UIDS[user]} \"\" /var/home/{user} /bin/bash")
-        with open(f"bootc/build/files-{user}.conf", "w") as f:
-            f.write("\n".join([
-                f"d /var/home/{user} 0700 {user} {user} - -",
-                f"d /var/home/{user}/.ssh 0700 {user} {user} - -",
-                f"f+~ /var/home/{user}/.ssh/authorized_keys 0600 {user} {user} - {base64.b64encode(keys).decode("utf-8")}",
-            ]))
+        Path(f"bootc/build/user-{user}.conf").write_text("\n".join([
+            f"u {user} {UIDS[user]} \"\" /var/home/{user} /bin/bash",
+        ]))
+        Path(f"bootc/build/files-{user}.conf").write_text("\n".join([
+            f"d /var/home/{user} 0700 {user} {user} - -",
+            f"d /var/home/{user}/.ssh 0700 {user} {user} - -",
+            f"f+~ /var/home/{user}/.ssh/authorized_keys 0600 {user} {user} - {base64.b64encode(keys).decode("utf-8")}",
+        ]))
         cf.append(f"COPY build/user-{user}.conf /usr/lib/sysusers.d")
         cf.append(f"COPY build/files-{user}.conf /usr/lib/tmpfiles.d")
 
     # TODO add quadlets
 
     cf.append("RUN bootc container lint --fatal-warnings")
-    with open("bootc/Containerfile", "w") as f:
-        f.write("\n".join(cf))
+    Path("bootc/Containerfile").write_text("\n".join(cf))
 
 def update():
     if args.provision:
