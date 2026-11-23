@@ -58,14 +58,16 @@ def generate_bootc():
     cf = [
         "FROM --platform=linux/amd64 quay.io/fedora/fedora-bootc:latest",
         "RUN dnf install -y " + " ".join([
-            "avahi-tools",
-            "htop",
+            "htop", # admin tools
             "pciutils",
             "tmux",
             "usbutils",
             "vim",
             "zip",
-        ]) + " && dnf clean all && rm -rf /run/dnf /var/log/* /var/cache/* /var/lib/dnf",
+            "avahi-tools", # mdns
+            "nss-mdns",
+        ]) + " && dnf clean all",
+        "RUN rm -rf /run/dnf /var/log/* /var/cache/* /var/lib/dnf /var/lib/authselect/checksum",
         "RUN systemctl mask bootc-fetch-apply-updates.timer", # disable bootc auto update
         # TODO mask podman timer?
     ]
@@ -74,10 +76,6 @@ def generate_bootc():
     with open("bootc/build/hostname.conf", "w") as f:
         f.write(f"f+ /etc/hostname 0644 root root - {cfg["core"]["hostname"]}")
     cf.append("COPY build/hostname.conf /usr/lib/tmpfiles.d")
-
-    # TODO check mdns => use lower case address... issues on linux...
-    
-    # TODO enable nouveau
 
     # mount /boot (fixing from CoreOS)
     with open("bootc/build/boot.mount", "w") as f:

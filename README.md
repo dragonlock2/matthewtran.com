@@ -7,6 +7,7 @@ TODO update script builds bootc and apps in local registry and instructs server 
     --apps: builds with cache and update apps only
     --provision: doesn't ssh in and run bootc update
 
+TODO nouveau
 TODO update all but make gitea empty and delete the folder
 TODO update backup.py
 
