@@ -10,7 +10,9 @@ import socketserver
 import subprocess
 import yaml # pip install PyYAML
 from pathlib import Path
-from update import Registry
+from update import Registry, REGISTRY_PORT
+
+# NOTE all files created by Butane are carried over to bootc
 
 def check_keys():
     if "key" not in cfg["core"]["stash"]:
@@ -72,6 +74,7 @@ def add_root_drive():
                 "group": { "name": "core" },
             },
         ],
+        "files": [],
     }
 
 def add_ssh_keys():
@@ -84,6 +87,30 @@ def add_ssh_keys():
             },
         ],
     }
+
+def add_registry():
+    but["storage"]["files"].append({
+        "path": "/etc/systemd/resolved.conf",
+        "overwrite": True,
+        "contents": { "inline": "[Resolve]\nMulticastDNS=yes" }
+    })
+    but["storage"]["files"].append({
+        "path": f"/etc/containers/certs.d/{cfg["core"]["registry"]}:{REGISTRY_PORT}/domain.crt",
+        "overwrite": True,
+        "contents": { "inline": Path("bootc/certs/domain.crt").read_bytes() }
+    })
+    but["storage"]["files"].append({
+        "path": "/etc/ostree/auth.json",
+        "mode": 0o600,
+        "overwrite": True,
+        "contents": { "inline": Path("bootc/certs/auth.json").read_bytes() }
+    })
+    but["storage"]["files"].append({
+        "path": "/var/home/core/.config/containers/auth.json",
+        "mode": 0o600,
+        "overwrite": True,
+        "contents": { "inline": Path("bootc/certs/auth.json").read_bytes() }
+    })
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -106,10 +133,9 @@ if __name__ == "__main__":
     add_root_drive()
     # TODO additional drives => use fixed-size partitions for raid!
     add_ssh_keys()
-    # TODO copy root CA and login for bootc switch
+    add_registry()
     # TODO automate bootc switch
-        # sudo podman pull --tls-verify=false me:5001/matt-bootc:latest
-        # sudo bootc switch --transport containers-storage me:5001/matt-bootc:latest
+        # sudo bootc switch me.local:5001/matt-bootc:latest
 
     # generate ignition file
     with open("bootc/build/config.bu", "w") as f:

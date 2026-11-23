@@ -92,6 +92,7 @@ class Registry:
         subprocess.check_output(["podman", "stop", f"{IMAGE_PREFIX}-registry"])
 
 def generate_bootc():
+    # NOTE assume bootc image is readable by all users
     cf = [
         "FROM --platform=linux/amd64 quay.io/fedora/fedora-bootc:latest",
         "RUN dnf install -y " + " ".join([
@@ -102,13 +103,10 @@ def generate_bootc():
             "vim",
             "zip",
             "avahi-tools", # mdns
-            "nss-mdns",
         ]) + " && dnf clean all",
         "RUN rm -rf /run/dnf /var/log/* /var/cache/* /var/lib/dnf /var/lib/authselect/checksum",
         "RUN systemctl mask bootc-fetch-apply-updates.timer", # disable bootc auto update
         # TODO mask podman timer?
-        f"COPY certs/domain.crt /etc/containers/certs.d/{cfg["core"]["registry"]}:{REGISTRY_PORT}/domain.crt",
-        "COPY --chmod=0600 certs/auth.json /usr/lib/ostree/auth.json", # password for registry so keep super secure!
     ]
 
     # set hostname (no writing to /etc/hostname in podman and no hostnamectl D:)

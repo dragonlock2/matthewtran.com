@@ -1,19 +1,17 @@
 # matthewtran.com
 
-TODO make sure only root can access bootc image
-TODO make sure only root/core can access podman pulls
+TODO drive support
+TODO nouveau
+TODO automate switch
+
 TODO update script builds bootc and apps in local registry and instructs server to update
     default: repulls base images, clear build cache, clear registry volume and updates bootc and apps (run every 2 weeks)
     --fast: builds with cache and updates bootc and apps (needed if os config changes)
     --apps: builds with cache and update apps only
     --provision: doesn't ssh in and run bootc update
-
-TODO nouveau
-TODO update all but make gitea empty and delete the folder
+TODO update and move all services
+TODO add forgejo
 TODO update backup.py
-
-TODO delete minecraft bedrock and terraria
-TODO move to forgejo
 
 TODO reload entire server from backup (make sure only minecraft there)
 TODO regularly update this repo and rebuild containers from scratch
@@ -37,9 +35,6 @@ Services deployed on [matthewtran.com](https://matthewtran.com).
 
 1. Download the [CoreOS Live DVD ISO](https://fedoraproject.org/coreos/download).
 2. Create `bootc/config.yaml` and run `bootc/bootstrap.py`. Boot the resulting ISO. After enough installs the TPM may need to be cleared.
-
-
-
 
 
 

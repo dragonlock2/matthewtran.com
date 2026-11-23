@@ -6,3 +6,16 @@ core:
   stash:
     key: <LUKS key>
     wipe: true # must be true on fresh install
+drives:
+- name: "stuff"
+  key: <LUKS key>
+  devs:
+  - /dev/sda # use /dev/disk/by-id/*
+  wipe: true
+- name: "stuff2"
+  key: <LUKS key>
+  devs:
+  - /dev/sdb
+  - /dev/sdc # echo $(($(sudo blockdev --getsize64 /dev/<disk>) / 1048576))
+  size_mib: 65536 # reduce by some margin in case of part variance
+  wipe: true
