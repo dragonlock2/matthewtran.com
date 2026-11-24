@@ -12,7 +12,7 @@ from pathlib import Path
 IMAGE_PREFIX = "matt"
 REGISTRY_PORT = 5001
 
-UIDS = {
+UIDS = { # defines users
     "web"    : 1001,
     "crypto" : 1002,
     "game"   : 1003,
@@ -20,7 +20,7 @@ UIDS = {
     "tv"     : 1005,
 }
 
-IMAGES = {
+IMAGES = { # defines services
     "web": [
         "website",
         "forgejo",
