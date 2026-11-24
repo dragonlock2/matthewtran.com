@@ -18,6 +18,10 @@ def check_keys():
     if "key" not in cfg["core"]["stash"]:
         print(f'no cfg["core"]["stash"]["key"] entry, try "{base64.b64encode(secrets.token_bytes(64)).decode("utf-8")}"')
         exit(1)
+    for i, d in enumerate(cfg.get("drives", [])):
+        if "key" not in d:
+            print(f'cfg["drives"][{i}]["key"] doesn\'t exist, try "{base64.b64encode(secrets.token_bytes(64)).decode("utf-8")}"')
+            exit(1)
 
 def add_root_drive():
     but["storage"] = {
@@ -38,6 +42,7 @@ def add_root_drive():
                 ],
             },
         ],
+        "raid": [],
         "luks": [
             {
                 "name": "root",
@@ -48,8 +53,8 @@ def add_root_drive():
             {
                 "name": "stash",
                 "device": "/dev/disk/by-partlabel/stash",
-                "wipe_volume": cfg["core"]["stash"]["wipe"],
                 "key_file": { "inline": base64.b64decode(cfg["core"]["stash"]["key"]) },
+                "wipe_volume": cfg["core"]["stash"]["wipe"],
             },
         ],
         "filesystems": [
@@ -60,11 +65,11 @@ def add_root_drive():
                 "label": "root",
             },
             {
-                "path": "/var/mnt/stash",
                 "device": "/dev/mapper/stash",
                 "format": "ext4",
-                "with_mount_unit": True,
+                "path": "/var/mnt/stash",
                 "wipe_filesystem": cfg["core"]["stash"]["wipe"],
+                "with_mount_unit": True,
             },
         ],
         "directories": [
@@ -76,6 +81,45 @@ def add_root_drive():
         ],
         "files": [],
     }
+
+def add_more_drive():
+    for d in cfg.get("drives", []):
+        raid = len(d["devs"]) > 1
+        if raid:
+            for i, dev in enumerate(d["devs"]):
+                but["storage"]["disks"].append({
+                    "device": dev,
+                    "partitions": [
+                        {
+                            "label": f"{d["name"]}{i}",
+                            "number": 1,
+                            "size_mib": d["size_mib"], # fixed size in case new drive different
+                        },
+                    ],
+                })
+            but["storage"]["raid"].append({
+                "name": d["name"],
+                "level": "raid1",
+                "devices": [f"/dev/disk/by-partlabel/{d["name"]}{i}" for i in range(len(d["devs"]))],
+            })
+        but["storage"]["luks"].append({
+            "name": d["name"],
+            "device": f"/dev/md/{d["name"]}" if raid else d["devs"][0],
+            "key_file": { "inline": base64.b64decode(d["key"]) },
+            "wipe_volume": d["wipe"],
+        })
+        but["storage"]["filesystems"].append({
+            "device": f"/dev/mapper/{d["name"]}",
+            "format": "ext4",
+            "path": f"/var/mnt/{d["name"]}",
+            "wipe_filesystem": d["wipe"],
+            "with_mount_unit": True,
+        })
+        but["storage"]["directories"].append({
+            "path": f"/var/mnt/{d["name"]}",
+            "user": { "name": "core" },
+            "group": { "name": "core" },
+        })
 
 def add_ssh_keys():
     assert(len(cfg["core"]["ssh_keys"]) > 0)
@@ -105,9 +149,17 @@ def add_registry():
         "overwrite": True,
         "contents": { "inline": Path("bootc/certs/auth.json").read_bytes() }
     })
+    for dir in ["/var/home/core/.config", "/var/home/core/.config/containers"]:
+        but["storage"]["directories"].append({
+            "path": dir,
+            "user": { "name": "core" },
+            "group": { "name": "core" },
+        })
     but["storage"]["files"].append({
         "path": "/var/home/core/.config/containers/auth.json",
         "mode": 0o600,
+        "user": { "name": "core" },
+        "group": { "name": "core" },
         "overwrite": True,
         "contents": { "inline": Path("bootc/certs/auth.json").read_bytes() }
     })
@@ -131,7 +183,7 @@ if __name__ == "__main__":
 
     check_keys()
     add_root_drive()
-    # TODO additional drives => use fixed-size partitions for raid!
+    add_more_drive()
     add_ssh_keys()
     add_registry()
     # TODO automate bootc switch

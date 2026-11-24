@@ -1,8 +1,12 @@
 # matthewtran.com
 
-TODO drive support
-TODO nouveau
 TODO automate switch
+TODO provision server again
+TODO nouveau
+
+TODO figure out how to send images to user
+    1. secure sysroot (sus af tbh) and add auth token for each user (either N registries or Zot)
+    2. core user pulls images and scp over (might be slow, duplicate storage)
 
 TODO update script builds bootc and apps in local registry and instructs server to update
     default: repulls base images, clear build cache, clear registry volume and updates bootc and apps (run every 2 weeks)
@@ -34,7 +38,7 @@ Services deployed on [matthewtran.com](https://matthewtran.com).
 ## setup
 
 1. Download the [CoreOS Live DVD ISO](https://fedoraproject.org/coreos/download).
-2. Create `bootc/config.yaml` and run `bootc/bootstrap.py`. Boot the resulting ISO. After enough installs the TPM may need to be cleared.
+2. Create `bootc/config.yaml` and run `bootc/bootstrap.py`. Boot the resulting ISO. After enough installs the TPM may need to be cleared. It is recommended to use `wipefs -a` and set `wipe=true` on each involved disk for a fresh install.
 
 
 

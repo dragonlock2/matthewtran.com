@@ -103,10 +103,10 @@ def generate_bootc():
             "vim",
             "zip",
             "avahi-tools", # mdns
+            "gdisk", # mdadm
         ]) + " && dnf clean all",
         "RUN rm -rf /run/dnf /var/log/* /var/cache/* /var/lib/dnf /var/lib/authselect/checksum",
         "RUN systemctl mask bootc-fetch-apply-updates.timer", # disable bootc auto update
-        # TODO mask podman timer?
     ]
 
     # set hostname (no writing to /etc/hostname in podman and no hostnamectl D:)
