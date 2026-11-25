@@ -1,12 +1,14 @@
 # matthewtran.com
 
+TODO get podman and systemctl working for service users
+    test adding and removing users
+
 TODO figure out how to send images to user
     1. secure sysroot (sus af tbh) and add auth token for each user (either N registries or Zot)
     2. core user pulls images and scp over (might be slow, duplicate storage)
     use systemd service and trigger based on stamp file, update script queries service for done
     how to know when services have loaded the new image? maybe just reload the service?
 TODO update and move all services (move to forgejo)
-TODO test adding and removing users
 
 TODO add options to update script
     default: clear registry volume, repull base images, clear build cache => update bootc and apps
