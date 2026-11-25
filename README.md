@@ -1,10 +1,5 @@
 # matthewtran.com
 
-TODO provision actual server
-TODO check nouveau
-
-TODO update router.py to run locally no forwardagent...
-
 TODO figure out how to send images to user
     1. secure sysroot (sus af tbh) and add auth token for each user (either N registries or Zot)
     2. core user pulls images and scp over (might be slow, duplicate storage)
@@ -20,7 +15,7 @@ TODO add options to update script
     --provision: additional flag, no update just keep registry up
 TODO update backup.py
 
-TODO test full reinstall
+TODO test fresh install and reinstall
 TODO reload minecraft backup
 TODO subscribe to all security email lists...
 TODO add cpu usage monitor
@@ -30,7 +25,7 @@ TODO add cpu usage monitor
 Services deployed on [matthewtran.com](https://matthewtran.com).
 
 - website
-- gitea ([git.matthewtran.com](https://git.matthewtran.com))
+- forgejo ([git.matthewtran.com](https://git.matthewtran.com))
 - monerod
 - p2pool (`xmrig -o matthewtran.com`)
 - minecraft

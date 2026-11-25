@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import subprocess
+import yaml # pip install PyYAML
 
 DP_LEN  = 64 # xfinity delegated prefix length
 WRT_ULA = "fd16:8f4d:f516::" # OpenWrt random
@@ -17,11 +18,15 @@ def run(cmds):
     subprocess.run(["ssh", "root@OpenWrt.lan", ";".join(cmds)], check=True)
 
 def mac(eth):
-    return open(f"/sys/class/net/{eth}/address", "r").read().strip()
+    return subprocess.check_output([
+        "ssh", f"core@{cfg["core"]["hostname"]}.local", f"cat /sys/class/net/{eth}/address",
+    ]).strip().decode("utf-8")
 
 def duid():
     # adapted from https://github.com/mss/nm-duid
-    id = bytes.fromhex(open("/etc/machine-id", "r").read().strip())
+    id = bytes.fromhex(subprocess.check_output([
+        "ssh", f"core@{cfg["core"]["hostname"]}.local", "cat /etc/machine-id",
+    ]).strip().decode("utf-8"))
     return "0004" + hashlib.sha256(id).digest()[:16].hex()
 
 def key():
@@ -33,6 +38,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--provision", type=str, help="network interface to set static IP for, e.g. enp5s0")
     args = parser.parse_args()
+    cfg = yaml.safe_load(open("bootc/config.yaml"))
 
     # update static IP
     if args.provision is None:
@@ -73,8 +79,6 @@ if __name__ == "__main__":
         "p2pool"      : "3333",
         "p2pool2"     : "37888-37889",
         "minecraft"   : "25565",
-        "minecraft_be": "19132-19133",
-        "terraria"    : "7777",
     }
     for name in PORTS:
         run([
