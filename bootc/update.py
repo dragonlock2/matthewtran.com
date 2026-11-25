@@ -9,6 +9,12 @@ import time
 import yaml # pip install PyYAML
 from pathlib import Path
 
+"""
+The bootc image and root podman image store are considered readable by non-root
+users. Do not store secrets in them. Service images are considered secure as
+only the core user pulls them.
+"""
+
 IMAGE_PREFIX = "matt"
 REGISTRY_PORT = 5001
 
@@ -92,7 +98,6 @@ class Registry:
         subprocess.check_output(["podman", "stop", f"{IMAGE_PREFIX}-registry"])
 
 def generate_bootc():
-    # NOTE assume bootc image is readable by all users
     cf = [
         "FROM --platform=linux/amd64 quay.io/fedora/fedora-bootc:latest",
         "RUN dnf install -y " + " ".join([

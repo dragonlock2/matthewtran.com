@@ -10,9 +10,17 @@ import socketserver
 import subprocess
 import yaml # pip install PyYAML
 from pathlib import Path
-from update import Registry, REGISTRY_PORT
+from update import Registry, IMAGE_PREFIX, REGISTRY_PORT
 
-# NOTE all files created by Butane are carried over to bootc
+"""
+CoreOS is responsible for bootstrapping a bootc install. Notably all setup
+is done as local modifications to /etc and are thus carried over to bootc.
+- Create the core admin user
+- Set up the drives and systemd mounts
+- Inject certificate and password for the image registry
+- Enable mDNS resolving (primarily so CoreOS can access the registry)
+- Switch to the bootc image in the registry after first boot
+"""
 
 def check_keys():
     if "key" not in cfg["core"]["stash"]:
@@ -164,6 +172,32 @@ def add_registry():
         "contents": { "inline": Path("bootc/certs/auth.json").read_bytes() }
     })
 
+def switch_bootc():
+    but["systemd"] = { "units": [{
+        "name": "coreos-to-bootc.service",
+        "enabled": True,
+        "contents": "\n".join([
+            "[Unit]",
+            "Description=Switch from CoreOS to bootc",
+            "ConditionKernelCommandLine=ignition.firstboot", # first boot only
+            "Wants=network-online.target coreos-ignition-firstboot-complete.service",
+            "After=network-online.target coreos-ignition-firstboot-complete.service",
+            "Before=kmsconvt@tty1.service", # before login prompt
+            "[Service]",
+            "Type=oneshot",
+            "RemainAfterExit=yes",
+            "StandardInput=tty", # take over screen
+            "StandardOutput=tty",
+            "StandardError=tty",
+            "TTYPath=/dev/tty1",
+            "TTYReset=yes",
+            "TTYVTDisallocate=yes",
+            f"ExecStart=bootc switch --apply {cfg["core"]["registry"]}:5001/{IMAGE_PREFIX}-bootc:latest",
+            "[Install]",
+            "WantedBy=multi-user.target",
+        ]),
+    }]}
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--iso", type=str, help="Path to CoreOS Live DVD ISO")
@@ -186,8 +220,7 @@ if __name__ == "__main__":
     add_more_drive()
     add_ssh_keys()
     add_registry()
-    # TODO automate bootc switch
-        # sudo bootc switch me.local:5001/matt-bootc:latest
+    switch_bootc()
 
     # generate ignition file
     with open("bootc/build/config.bu", "w") as f:
