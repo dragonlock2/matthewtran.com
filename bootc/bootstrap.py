@@ -15,10 +15,10 @@ from update import Registry, IMAGE_PREFIX, REGISTRY_PORT
 """
 CoreOS is responsible for bootstrapping a bootc install. Notably all setup
 is done as local modifications to /etc and are thus carried over to bootc.
-- Create the core admin user
 - Set up the drives and systemd mounts
 - Inject certificate and password for the image registry
 - Enable mDNS resolving (primarily so CoreOS can access the registry)
+- Clean up all unnecessary local modifications to /etc
 - Switch to the bootc image in the registry after first boot
 """
 
@@ -134,7 +134,7 @@ def add_ssh_keys():
     but["passwd"] = {
         "users": [
             {
-                "name": "core",
+                "name": "root",
                 "ssh_authorized_keys": cfg["core"]["ssh_keys"],
             },
         ],
@@ -192,6 +192,19 @@ def switch_bootc():
             "TTYPath=/dev/tty1",
             "TTYReset=yes",
             "TTYVTDisallocate=yes",
+            "ExecStart=rm -rf /etc/systemd/system-preset", # revert unnecessary /etc modifications
+            "ExecStart=rm -rf /etc/systemd/system/afterburn-sshkeys.target.requires",
+            "ExecStart=rm /etc/audit/audit.rules",
+            "ExecStart=rm /etc/.rpm-ostree-shadow-mode-fixed2.stamp",
+            "ExecStart=rm /etc/.ignition-result.json",
+            "ExecStart=rm /etc/.updated",
+            "ExecStart=rm /etc/passwd- /etc/group- /etc/shadow- /etc/gshadow- /etc/subuid- /etc/subgid-",
+            "ExecStart=cp /usr/etc/passwd /etc/passwd",
+            "ExecStart=cp /usr/etc/group /etc/group",
+            "ExecStart=cp /usr/etc/shadow /etc/shadow",
+            "ExecStart=cp /usr/etc/gshadow /etc/gshadow",
+            "ExecStart=cp /usr/etc/subuid /etc/subuid",
+            "ExecStart=cp /usr/etc/subgid /etc/subgid",
             f"ExecStart=bootc switch --apply {cfg["core"]["registry"]}:5001/{IMAGE_PREFIX}-bootc:latest",
             "[Install]",
             "WantedBy=multi-user.target",
@@ -218,7 +231,7 @@ if __name__ == "__main__":
     check_keys()
     add_root_drive()
     add_more_drive()
-    add_ssh_keys()
+    # add_ssh_keys()
     add_registry()
     switch_bootc()
 

@@ -1,7 +1,6 @@
 # matthewtran.com
 
-TODO get podman and systemctl working for service users
-    test adding and removing users
+TODO get systemctl working for service users
 
 TODO figure out how to send images to user
     1. secure sysroot (sus af tbh) and add auth token for each user (either N registries or Zot)

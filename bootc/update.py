@@ -19,6 +19,7 @@ IMAGE_PREFIX = "matt"
 REGISTRY_PORT = 5001
 
 UIDS = { # defines users
+    "core"   : 1000, # admin
     "web"    : 1001,
     "crypto" : 1002,
     "game"   : 1003,
@@ -134,20 +135,13 @@ def generate_bootc():
     ]))
     cf.append("COPY build/boot.mount /etc/systemd/system")
 
-    # create core user (reusing from CoreOS)
-    keys = "\n".join(cfg["core"]["ssh_keys"]).encode("utf-8")
-    Path(f"bootc/build/core-home.conf").write_text("\n".join([
-        f"f+~ /var/home/core/.ssh/authorized_keys 0600 core core - {base64.b64encode(keys).decode("utf-8")}",
-    ]))
-    cf.append("COPY build/core-home.conf /usr/lib/tmpfiles.d")
-    cf.append("RUN echo \"%sudo ALL=(ALL) NOPASSWD: ALL\" > /etc/sudoers.d/core-sudo-group")
-
     # create users
+    keys = "\n".join(cfg["core"]["ssh_keys"]).encode("utf-8")
     Path(f"bootc/build/users.conf").write_text("\n".join([
         f"u {user} {UIDS[user]} \"\" /var/home/{user} /bin/bash"
         for user in UIDS
     ]))
-    Path(f"bootc/build/users-home.conf").write_text("\n".join([
+    Path(f"bootc/build/home.conf").write_text("\n".join([
         l for user in UIDS for l in
         [ # NOTE removing user does not remove old home directory
             f"d /var/home/{user} 0700 {user} {user} - -",
@@ -156,8 +150,18 @@ def generate_bootc():
         ]
     ]))
     cf.append(f"COPY build/users.conf /usr/lib/sysusers.d")
-    cf.append(f"COPY build/users-home.conf /usr/lib/tmpfiles.d")
-    # TODO add subuids
+    cf.append(f"COPY build/home.conf /usr/lib/tmpfiles.d")
+    cf.extend([
+        l for user in UIDS for l in
+        [
+            f"RUN groupadd -g {UIDS[user]} {user}",
+            f"RUN useradd -u {UIDS[user]} -g {UIDS[user]} -m -d /var/home/{user} -s /bin/bash {user}",
+            f"RUN rm -rf /var/home/{user}", # tmpfiles.d will create
+        ]
+    ])
+
+    # TODO core wheel group and nopasswd sudo
+    # TODO linger
 
     # TODO add quadlets
 
