@@ -143,7 +143,8 @@ def generate_bootc():
     ]))
     Path("bootc/build/home.conf").write_text("\n".join([
         l for user in UIDS for l in
-        [ # NOTE removing user does not remove old home directory
+        [
+            # NOTE home directory stays if user removed
             f"d /var/home/{user} 0700 {user} {user} - -",
             f"d /var/home/{user}/.ssh 0700 {user} {user} - -",
             f"f+~ /var/home/{user}/.ssh/authorized_keys 0600 {user} {user} - {base64.b64encode(keys).decode("utf-8")}",
@@ -163,16 +164,33 @@ def generate_bootc():
     # grant sudo
     with Path("bootc/build/users.conf").open("a") as f:
         f.write("\nm core wheel")
-    cf.append("RUN usermod -aG wheel core")
+    cf.append(f"RUN usermod -aG wheel,{",".join(UIDS.keys())} core")
     cf.append("RUN echo \"%wheel ALL=(ALL) NOPASSWD: ALL\" > /etc/sudoers.d/core-sudo-group")
 
     # enable linger
     Path("bootc/build/linger.conf").write_text("\n".join([
-        # NOTE file stays if user removed but doesn't cause issues
+        # NOTE no issues when file stays if user removed
         f"f+ /var/lib/systemd/linger/{user} 0644 root root - -"
         for user in UIDS
     ]))
     cf.append("COPY build/linger.conf /usr/lib/tmpfiles.d")
+
+    # TODO image update support
+    Path("bootc/build/imagestore.conf").write_text("\n".join([
+        l for user in IMAGES for l in
+        [
+            # NOTE image store stays if user removed
+            f"d /var/lib/imagestore/{user} 2750 core {user} - -", # setgid=1 to inherit group
+            f"a+ /var/lib/imagestore/{user} - - - - d:u::rwX,d:g::r-X,d:o::---", # default 750,640
+        ]
+    ]))
+    cf.append("COPY build/imagestore.conf /usr/lib/tmpfiles.d")
+
+    # create shared dirs for each user /var/lib/services => core rwx, service rx, else none
+    # make sure future files pull w/ right permissions 750 for dirs, 640 for files
+
+    # core podman pulls into those shared dirs
+    # service can just run images with additionalimagestores
 
     # TODO add quadlets
 
