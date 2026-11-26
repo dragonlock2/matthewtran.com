@@ -85,7 +85,7 @@ class Registry:
             "-p", f"{REGISTRY_PORT}:5000",
             "-v", f"{IMAGE_PREFIX}-registry:/var/lib/registry",
             "-v", "./bootc/certs:/certs:ro",
-            "-e", f"REGISTRY_HTTP_ADDR=0.0.0.0:5000",
+            "-e", "REGISTRY_HTTP_ADDR=0.0.0.0:5000",
             "-e", "REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt",
             "-e", "REGISTRY_HTTP_TLS_KEY=/certs/domain.key",
             "-e", "REGISTRY_AUTH=htpasswd",
@@ -137,11 +137,11 @@ def generate_bootc():
 
     # create users
     keys = "\n".join(cfg["core"]["ssh_keys"]).encode("utf-8")
-    Path(f"bootc/build/users.conf").write_text("\n".join([
+    Path("bootc/build/users.conf").write_text("\n".join([
         f"u {user} {UIDS[user]} \"\" /var/home/{user} /bin/bash"
         for user in UIDS
     ]))
-    Path(f"bootc/build/home.conf").write_text("\n".join([
+    Path("bootc/build/home.conf").write_text("\n".join([
         l for user in UIDS for l in
         [ # NOTE removing user does not remove old home directory
             f"d /var/home/{user} 0700 {user} {user} - -",
@@ -149,8 +149,8 @@ def generate_bootc():
             f"f+~ /var/home/{user}/.ssh/authorized_keys 0600 {user} {user} - {base64.b64encode(keys).decode("utf-8")}",
         ]
     ]))
-    cf.append(f"COPY build/users.conf /usr/lib/sysusers.d")
-    cf.append(f"COPY build/home.conf /usr/lib/tmpfiles.d")
+    cf.append("COPY build/users.conf /usr/lib/sysusers.d")
+    cf.append("COPY build/home.conf /usr/lib/tmpfiles.d")
     cf.extend([
         l for user in UIDS for l in
         [
@@ -160,8 +160,19 @@ def generate_bootc():
         ]
     ])
 
-    # TODO core wheel group and nopasswd sudo
-    # TODO linger
+    # grant sudo
+    with Path("bootc/build/users.conf").open("a") as f:
+        f.write("\nm core wheel")
+    cf.append("RUN usermod -aG wheel core")
+    cf.append("RUN echo \"%wheel ALL=(ALL) NOPASSWD: ALL\" > /etc/sudoers.d/core-sudo-group")
+
+    # enable linger
+    Path("bootc/build/linger.conf").write_text("\n".join([
+        # NOTE file stays if user removed but doesn't cause issues
+        f"f+ /var/lib/systemd/linger/{user} 0644 root root - -"
+        for user in UIDS
+    ]))
+    cf.append("COPY build/linger.conf /usr/lib/tmpfiles.d")
 
     # TODO add quadlets
 

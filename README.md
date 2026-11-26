@@ -1,7 +1,5 @@
 # matthewtran.com
 
-TODO get systemctl working for service users
-
 TODO figure out how to send images to user
     1. secure sysroot (sus af tbh) and add auth token for each user (either N registries or Zot)
     2. core user pulls images and scp over (might be slow, duplicate storage)

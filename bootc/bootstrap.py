@@ -195,9 +195,7 @@ def switch_bootc():
             "ExecStart=rm -rf /etc/systemd/system-preset", # revert unnecessary /etc modifications
             "ExecStart=rm -rf /etc/systemd/system/afterburn-sshkeys.target.requires",
             "ExecStart=rm /etc/audit/audit.rules",
-            "ExecStart=rm /etc/.rpm-ostree-shadow-mode-fixed2.stamp",
             "ExecStart=rm /etc/.ignition-result.json",
-            "ExecStart=rm /etc/.updated",
             "ExecStart=rm /etc/passwd- /etc/group- /etc/shadow- /etc/gshadow- /etc/subuid- /etc/subgid-",
             "ExecStart=cp /usr/etc/passwd /etc/passwd",
             "ExecStart=cp /usr/etc/group /etc/group",
