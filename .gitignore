@@ -9,6 +9,9 @@ bootc/build
 bootc/certs
 bootc/*.yaml
 
+# web/forgejo
+web/forgejo/entry.sh
+
 
 # config
 config/server.json

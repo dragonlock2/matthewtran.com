@@ -1,10 +1,10 @@
 # matthewtran.com
 
-TODO update and move all services (move to forgejo)
-
-TODO update.py systemd to update
+TODO update.py systemd to pull images
+TODO add quadlet
 TODO update.py ssh to update
-TODO add quadlets
+
+TODO update and move rest of services
 
 TODO update.py w/ or w/o build cache
 TODO update bootstrap.py with --certs in case certs is deleted

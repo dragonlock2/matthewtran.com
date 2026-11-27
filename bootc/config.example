@@ -6,6 +6,7 @@ core:
   stash:
     key: <LUKS key>
     wipe: true
+  data_dir: /var/mnt/stash/data
 drives:
 - name: stuff
   key: <LUKS key>
@@ -19,3 +20,6 @@ drives:
   - /dev/disk/by-id/disk2 # (blockdev --getsize64 <disk>) / 2^20
   size_mib: 65536 # reduce by some margin in case of part variance
   wipe: true
+forgejo:
+  user: dragonlock2
+  pass: password

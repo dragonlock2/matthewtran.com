@@ -1,4 +1,19 @@
-FROM docker.io/gitea/gitea:1.26.4
+FROM --platform=linux/amd64 codeberg.org/forgejo/forgejo:17
 
-# TODO empty container until can fix
-# TODO move env vars here and create admin user on start!
+ENV FORGEJO__admin__DISABLE_REGULAR_ORG_CREATION=true
+ENV FORGEJO__oauth2__ENABLED=false
+ENV FORGEJO__openid__ENABLE_OPENID_SIGNIN=false
+ENV FORGEJO__openid__ENABLE_OPENID_SIGNUP=false
+ENV FORGEJO__security__INSTALL_LOCK=true
+ENV FORGEJO__server__DOMAIN=matthewtran.com
+ENV FORGEJO__server__LFS_START_SERVER=true
+ENV FORGEJO__server__OFFLINE_MODE=true
+# ENV FORGEJO__server__ROOT_URL=git.matthewtran.com
+ENV FORGEJO__server__SSH_DOMAIN=matthewtran.com
+ENV FORGEJO__server__SSH_PORT=2222
+ENV FORGEJO__service__DEFAULT_ALLOW_CREATE_ORGANIZATION=false
+ENV FORGEJO__service__DISABLE_REGISTRATION=true
+
+WORKDIR /root
+COPY entry.sh ./
+CMD ["/bin/bash", "/root/entry.sh"]

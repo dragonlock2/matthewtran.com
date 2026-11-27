@@ -209,6 +209,7 @@ def generate_bootc_users(cf):
         # admin: skopeo copy docker://<img>:latest oci:/var/lib/imagestore/<usr>:<img>:latest
         # service: podman pull oci:/var/lib/imagestore/<usr>:<img>:latest
         # restart pods
+        # mount <data_dir>/<usr>/<img>:/data:Z
 
 def generate_bootc_quadlets(cf):
     # TODO add quadlets
@@ -223,8 +224,22 @@ def generate_bootc():
     Path("bootc/Containerfile").write_text("\n".join(cf))
 
 def generate_apps():
-    # TODO impl
-    pass
+    # web/forgejo
+    Path("web/forgejo/entry.sh").write_text("\n".join([
+        "#!/bin/sh",
+        "/usr/bin/entrypoint &",
+        "PID=$!",
+        "until curl localhost:3000/api/v1/version >/dev/null 2>&1; do",
+        "  sleep 1",
+        "done",
+        f"if ! su-exec git forgejo admin user list --admin | grep {cfg["forgejo"]["user"]}; then",
+        "  su-exec git forgejo admin user create --admin --must-change-password=false --email \"matthewlamtran@berkeley.edu\"" +
+            f" --username \"{cfg["forgejo"]["user"]}\" --password \"{cfg["forgejo"]["pass"]}\"",
+        "fi",
+        "wait $PID",
+    ]))
+
+    # TODO rest
 
 def update():
     if args.provision:
