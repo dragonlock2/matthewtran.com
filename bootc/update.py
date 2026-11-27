@@ -98,8 +98,9 @@ class Registry:
     def __exit__(self, exc_type, exc_val, exc_tb):
         subprocess.check_output(["podman", "stop", f"{IMAGE_PREFIX}-registry"])
 
-def generate_bootc():
-    cf = [
+def generate_bootc_base(cf):
+    # base image
+    cf.extend([
         "FROM --platform=linux/amd64 quay.io/fedora/fedora-bootc:latest",
         "RUN dnf install -y " + " ".join([
             "htop", # admin tools
@@ -113,7 +114,7 @@ def generate_bootc():
         ]) + " && dnf clean all",
         "RUN rm -rf /run/dnf /var/log/* /var/cache/* /var/lib/dnf /var/lib/authselect/checksum",
         "RUN systemctl mask bootc-fetch-apply-updates.timer", # disable bootc auto update
-    ]
+    ])
 
     # set hostname (no writing to /etc/hostname in podman and no hostnamectl D:)
     Path("bootc/build/hostname.conf").write_text("\n".join([
@@ -135,6 +136,7 @@ def generate_bootc():
     ]))
     cf.append("COPY build/boot.mount /etc/systemd/system")
 
+def generate_bootc_users(cf):
     # create users
     keys = "\n".join(cfg["core"]["ssh_keys"]).encode("utf-8")
     Path("bootc/build/users.conf").write_text("\n".join([
@@ -146,8 +148,8 @@ def generate_bootc():
         [
             # NOTE home directory stays if user removed
             f"d /var/home/{user} 0700 {user} {user} - -",
-            f"d /var/home/{user}/.ssh 0700 {user} {user} - -",
-            f"f+~ /var/home/{user}/.ssh/authorized_keys 0600 {user} {user} - {base64.b64encode(keys).decode("utf-8")}",
+            f"d /var/home/{user}/.ssh 0755 {user} {user} - -",
+            f"f+~ /var/home/{user}/.ssh/authorized_keys 0644 {user} {user} - {base64.b64encode(keys).decode("utf-8")}",
         ]
     ]))
     cf.append("COPY build/users.conf /usr/lib/sysusers.d")
@@ -175,25 +177,26 @@ def generate_bootc():
     ]))
     cf.append("COPY build/linger.conf /usr/lib/tmpfiles.d")
 
-    # TODO image update support
+    # image update support
     Path("bootc/build/imagestore.conf").write_text("\n".join([
-        l for user in IMAGES for l in
-        [
-            # NOTE image store stays if user removed
-            f"d /var/lib/imagestore/{user} 2750 core {user} - -", # setgid=1 to inherit group
-            f"a+ /var/lib/imagestore/{user} - - - - d:u::rwX,d:g::r-X,d:o::---", # default 750,640
-        ]
+        f"d /var/lib/imagestore/{user} 0750 core {user} - -"
+        for user in IMAGES
     ]))
     cf.append("COPY build/imagestore.conf /usr/lib/tmpfiles.d")
+    # TODO systemd service to copy images and restart pods
+        # admin: skopeo copy docker://<img>:latest oci:/var/lib/imagestore/<usr>:<img>:latest
+        # service: podman pull oci:/var/lib/imagestore/<usr>:<img>:latest
+        # restart pods
 
-    # create shared dirs for each user /var/lib/services => core rwx, service rx, else none
-    # make sure future files pull w/ right permissions 750 for dirs, 640 for files
-
-    # core podman pulls into those shared dirs
-    # service can just run images with additionalimagestores
-
+def generate_bootc_quadlets(cf):
     # TODO add quadlets
+    pass
 
+def generate_bootc():
+    cf = []
+    generate_bootc_base(cf)
+    generate_bootc_users(cf)
+    generate_bootc_quadlets(cf)
     cf.append("RUN bootc container lint --fatal-warnings")
     Path("bootc/Containerfile").write_text("\n".join(cf))
 

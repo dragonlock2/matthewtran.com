@@ -1,9 +1,9 @@
 # matthewtran.com
 
 TODO figure out how to send images to user
-    additional image store? pull to read-only shared folder
     update bootc => just call bootc upgrade
-    update services => just call script that pulls into shared store, restarts all pods
+    update services => remove stamp and restart service, poll until service ran and finished
+        service runs script to skopeo copy, podman pull, restart all pods
 TODO update and move all services (move to forgejo)
 
 TODO add options to update script
