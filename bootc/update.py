@@ -29,19 +29,19 @@ UIDS = { # defines users
 
 IMAGES = { # defines services
     "web": [
-        "website",
+        # "website",
         "forgejo",
     ],
-    "crypto": [
-        "monerod",
-        "p2pool",
-    ],
-    "game": [
-        "minecraft",
-    ],
-    "nas": [
-        "nas",
-    ],
+    # "crypto": [
+    #     "monerod",
+    #     "p2pool",
+    # ],
+    # "game": [
+    #     "minecraft",
+    # ],
+    # "nas": [
+    #     "nas",
+    # ],
 }
 
 class Registry:
@@ -69,6 +69,8 @@ class Registry:
             }, indent=4))
 
     def build(self, user, image):
+        # TODO default => repull base images, clear build cache
+        # TODO --fast/--apps => build with cache
         if user is None:
             tag = f"{IMAGE_PREFIX}-{image}"
             subprocess.run(["podman", "build", "--tag", tag, f"{image}"], check=True)
@@ -177,12 +179,32 @@ def generate_bootc_users(cf):
     ]))
     cf.append("COPY build/linger.conf /usr/lib/tmpfiles.d")
 
+    # allow port access
+    cf.append("RUN echo \"net.ipv4.ip_unprivileged_port_start=80\" > /etc/sysctl.d/99-unprivileged-ports.conf")
+
     # image update support
     Path("bootc/build/imagestore.conf").write_text("\n".join([
+        # NOTE image store stays if user removed
         f"d /var/lib/imagestore/{user} 0750 core {user} - -"
         for user in IMAGES
     ]))
+    Path(f"bootc/build/{IMAGE_PREFIX}-update.service").write_text("\n".join([
+        "[Unit]",
+        f"Description=Update {IMAGE_PREFIX}-* images",
+        "Wants=network-online.target",
+        "After=network-online.target",
+        f"ConditionPathExists=!/var/lib/{IMAGE_PREFIX}-update.stamp",
+        "[Service]",
+        "Type=oneshot",
+        "RemainAfterExit=yes",
+        "ExecStart=echo hello", # TODO update
+        f"ExecStart=touch /var/lib/{IMAGE_PREFIX}-update.stamp",
+        "[Install]",
+        "WantedBy=multi-user.target",
+    ]))
     cf.append("COPY build/imagestore.conf /usr/lib/tmpfiles.d")
+    cf.append(f"COPY build/{IMAGE_PREFIX}-update.service /usr/lib/systemd/system")
+    cf.append(f"RUN systemctl enable {IMAGE_PREFIX}-update.service")
     # TODO systemd service to copy images and restart pods
         # admin: skopeo copy docker://<img>:latest oci:/var/lib/imagestore/<usr>:<img>:latest
         # service: podman pull oci:/var/lib/imagestore/<usr>:<img>:latest
@@ -200,13 +222,21 @@ def generate_bootc():
     cf.append("RUN bootc container lint --fatal-warnings")
     Path("bootc/Containerfile").write_text("\n".join(cf))
 
+def generate_apps():
+    # TODO impl
+    pass
+
 def update():
     if args.provision:
         print("Registry is up, press Ctrl-C to exit")
         while True:
             time.sleep(1.0)
     else:
-        raise NotImplementedError # TODO ssh in and update
+        # TODO impl
+        # default/--fast => update bootc+apps => remove stamp, call bootc upgrade --apply
+        # --apps => update apps => remove stamp, systemd restart
+        # check for stamp for done
+        raise NotImplementedError
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -216,8 +246,10 @@ if __name__ == "__main__":
     Path("bootc/build").mkdir(exist_ok=True)
 
     with Registry() as reg:
-        # TODO generate apps
+        generate_apps()
         generate_bootc()
-        # TODO build apps
+        for user in IMAGES:
+            for img in IMAGES[user]:
+                reg.build(user, img)
         reg.build(None, "bootc")
         update()

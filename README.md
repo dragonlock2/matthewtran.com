@@ -1,16 +1,12 @@
 # matthewtran.com
 
-TODO figure out how to send images to user
-    update bootc => just call bootc upgrade
-    update services => remove stamp and restart service, poll until service ran and finished
-        service runs script to skopeo copy, podman pull, restart all pods
 TODO update and move all services (move to forgejo)
 
-TODO add options to update script
-    default: repull base images, clear build cache => update bootc and apps
-    --fast: build with cache => update bootc and apps
-    --apps: build with cache => update apps
-    --provision: additional flag, no update just keep registry up
+TODO update.py systemd to update
+TODO update.py ssh to update
+TODO add quadlets
+
+TODO update.py w/ or w/o build cache
 TODO update bootstrap.py with --certs in case certs is deleted
 TODO update backup.py
 
