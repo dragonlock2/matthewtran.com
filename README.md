@@ -1,7 +1,6 @@
 # matthewtran.com
 
-TODO update and move rest of services
-TODO tv user
+TODO tv user (passwd, sound, video)
 TODO test all services
 
 TODO update.py w/ or w/o build cache

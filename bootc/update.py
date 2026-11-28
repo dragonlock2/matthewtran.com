@@ -32,10 +32,10 @@ IMAGES = { # defines services
         "website",
         "forgejo",
     ],
-    # "crypto": [
-    #     "monerod",
-    #     "p2pool",
-    # ],
+    "crypto": [
+        "monerod",
+        "p2pool",
+    ],
     "game": [
         "minecraft",
     ],
