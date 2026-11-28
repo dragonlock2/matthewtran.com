@@ -1,7 +1,5 @@
 # matthewtran.com
 
-TODO forgejo permission issues???
-
 TODO update and move rest of services
 
 TODO update.py w/ or w/o build cache

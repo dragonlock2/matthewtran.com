@@ -247,7 +247,7 @@ def generate_bootc_quadlets(cf):
     for user in IMAGES:
         data_dir.append(f"d {cfg["core"]["data_dir"]}/{user} 0770 {user} {user} - -")
         for img in IMAGES[user]:
-            data_dir.append(f"d {cfg["core"]["data_dir"]}/{user}/{img} 0770 {user} {user} - -")
+            data_dir.append(f"d {cfg["core"]["data_dir"]}/{user}/{img} 0755 {user} {user} - -")
     Path("bootc/build/data_dir.conf").write_text("\n".join(data_dir)) # NOTE folders stay if user removed
     cf.append("COPY build/data_dir.conf /usr/lib/tmpfiles.d")
 
