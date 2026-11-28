@@ -1,4 +1,4 @@
-FROM ubuntu:26.04
+FROM --platform=linux/amd64 ubuntu:26.04
 
 RUN apt-get update && apt-get -y upgrade
 RUN apt-get install -y wget bzip2

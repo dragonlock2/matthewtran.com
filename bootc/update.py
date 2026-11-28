@@ -36,11 +36,11 @@ IMAGES = { # defines services
     #     "monerod",
     #     "p2pool",
     # ],
-    # "game": [
-    #     "minecraft",
-    # ],
+    "game": [
+        "minecraft",
+    ],
     # "nas": [
-    #     "nas",
+    #     "samba",
     # ],
 }
 
@@ -61,7 +61,7 @@ PORTS = {
         "25565:25565", # minecraft
     ],
     "nas": [
-        "445:445", # nas
+        "445:445", # samba
     ],
 }
 
@@ -215,7 +215,7 @@ def generate_bootc_users(cf):
             ])
         up.extend([
             f"ExecStart=/usr/sbin/runuser -u {user} -- podman image prune -f",
-            f"ExecStart=/usr/bin/systemctl --machine={user}@.host --user restart {user}-pod " +
+            f"ExecStart=/usr/bin/systemctl --machine={user}@.host --user restart --no-block {user}-pod " +
                 " ".join(f"{user}-{img}" for img in IMAGES[user]),
         ])
     Path("bootc/build/imagestore.conf").write_text("\n".join([
@@ -302,7 +302,10 @@ def generate_apps():
         "wait $PID",
     ]))
 
-    # TODO rest
+    # game/minecraft
+    Path("game/minecraft/server.properties").write_text(
+        Path("game/minecraft/server.default").read_text() +
+        f"level-name=/data/{cfg["minecraft"]["world"]}\n")
 
 def update():
     if args.provision:
@@ -325,10 +328,10 @@ if __name__ == "__main__":
     Path("bootc/build").mkdir(exist_ok=True)
 
     with Registry() as reg:
-        generate_apps()
         generate_bootc()
+        generate_apps()
+        reg.build(None, "bootc")
         for user in IMAGES:
             for img in IMAGES[user]:
                 reg.build(user, img)
-        reg.build(None, "bootc")
         update()

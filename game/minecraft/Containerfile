@@ -1,0 +1,20 @@
+FROM --platform=linux/amd64 ubuntu:26.04
+
+RUN apt-get update && apt-get -y upgrade
+RUN apt-get install -y wget openjdk-25-jre
+
+WORKDIR /root
+
+# from https://github.com/itzg/rcon-cli
+RUN wget -O rcon-cli.tar.gz https://github.com/itzg/rcon-cli/releases/download/1.10.0/rcon-cli_1.10.0_linux_amd64.tar.gz
+RUN tar xvf rcon-cli.tar.gz && rm rcon-cli.tar.gz
+
+# from https://www.minecraft.net/en-us/download/server (currently 26.3)
+RUN wget https://piston-data.mojang.com/v1/objects/33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c/server.jar
+
+COPY entry.sh ./
+COPY eula.txt ./
+COPY ops.json ./
+COPY server.properties ./
+
+CMD ["/bin/bash", "/root/entry.sh"]

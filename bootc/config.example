@@ -25,3 +25,5 @@ website:
 forgejo:
   user: dragonlock2
   pass: password
+minecraft:
+  world: main

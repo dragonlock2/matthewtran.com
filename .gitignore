@@ -13,16 +13,9 @@ bootc/*.yaml
 web/website/discord.txt
 web/forgejo/entry.sh
 
-
-# config
-config/server.json
-config/*.bu
-config/*.ign
-config/*.iso
-
-# minecraft
-minecraft/server.properties
+# game
+game/minecraft/server.properties
 
 # nas
-nas/Dockerfile
-nas/smb.conf
+nas/samba/Dockerfile
+nas/samba/smb.conf
