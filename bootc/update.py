@@ -50,19 +50,19 @@ PORTS = {
         "443:443",
         "2222:22", # forgejo
     ],
-    # "crypto": [
-    #     "18080:18080", # monerod
-    #     "18081:18081",
-    #     "3333:3333", # p2pool
-    #     "37888:37888",
-    #     "37889:37889",
-    # ],
-    # "game": [
-    #     "25565:25565", # minecraft
-    # ],
-    # "nas": [
-    #     "445:445", # nas
-    # ],
+    "crypto": [
+        "18080:18080", # monerod
+        "18081:18081",
+        "3333:3333", # p2pool
+        "37888:37888",
+        "37889:37889",
+    ],
+    "game": [
+        "25565:25565", # minecraft
+    ],
+    "nas": [
+        "445:445", # nas
+    ],
 }
 
 class Registry:
@@ -212,8 +212,12 @@ def generate_bootc_users(cf):
                     f" docker://{cfg["core"]["registry"]}:5001/{IMAGE_PREFIX}-{user}-{img}:latest" +
                     f" oci:/var/lib/imagestore/{user}:{img}:latest",
                 f"ExecStart=/usr/sbin/runuser -u {user} -- podman pull oci:/var/lib/imagestore/{user}:{img}:latest",
-                # TODO update web-pod and web-forgejo
             ])
+        up.extend([
+            f"ExecStart=/usr/sbin/runuser -u {user} -- podman image prune -f",
+            f"ExecStart=/usr/bin/systemctl --machine={user}@.host --user restart {user}-pod " +
+                " ".join(f"{user}-{img}" for img in IMAGES[user]),
+        ])
     Path("bootc/build/imagestore.conf").write_text("\n".join([
         # NOTE image store stays if user removed
         f"d /var/lib/imagestore/{user} 0750 core {user} - -"
@@ -239,7 +243,7 @@ def generate_bootc_users(cf):
 
 def generate_bootc_quadlets(cf):
     # create data directories
-    data_dir = [f"d {cfg["core"]["data_dir"]} 0755 core core - -"]
+    data_dir = [f"d {cfg["core"]["data_dir"]} 0755 root root - -"]
     for user in IMAGES:
         data_dir.append(f"d {cfg["core"]["data_dir"]}/{user} 0770 {user} {user} - -")
         for img in IMAGES[user]:
@@ -251,10 +255,10 @@ def generate_bootc_quadlets(cf):
     for user in IMAGES:
         Path(f"bootc/build/{user}.pod").write_text("\n".join([
             "[Pod]",
-            *[f"PublishPort={p}" for p in PORTS[user]], # TODO all ports fail to bind
+            *[f"PublishPort={p}" for p in PORTS[user]],
         ]))
-        cf.append(f"RUN mkdir -p /usr/share/containers/systemd/users/{UIDS[user]}")
-        cf.append(f"COPY build/{user}.pod /usr/share/containers/systemd/users/{UIDS[user]}")
+        cf.append(f"RUN mkdir -p /etc/containers/systemd/users/{UIDS[user]}") # /usr/share applies to all users...
+        cf.append(f"COPY build/{user}.pod /etc/containers/systemd/users/{UIDS[user]}")
 
     # create containers
     for user in IMAGES:
@@ -269,7 +273,7 @@ def generate_bootc_quadlets(cf):
                 "[Install]",
                 "WantedBy=default.target",
             ]))
-            cf.append(f"COPY build/{user}-{img}.container /usr/share/containers/systemd/users/{UIDS[user]}")
+            cf.append(f"COPY build/{user}-{img}.container /etc/containers/systemd/users/{UIDS[user]}")
 
 def generate_bootc():
     cf = []
@@ -299,6 +303,7 @@ def generate_apps():
 
 def update():
     if args.provision:
+        # TODO can ping server until it shows up, then query stamp/systemd for done
         print("Registry is up, press Ctrl-C to exit")
         while True:
             time.sleep(1.0)

@@ -1,8 +1,6 @@
 # matthewtran.com
 
-TODO update.py systemd to pull images
-TODO add pod and quadlet
-TODO update.py restart pods
+TODO forgejo permission issues???
 
 TODO update and move rest of services
 
@@ -10,7 +8,7 @@ TODO update.py w/ or w/o build cache
 TODO update bootstrap.py with --certs in case certs is deleted
 TODO update backup.py
 
-TODO test fresh install and reinstall
+TODO test fresh install and reinstall and reboots
 TODO reload minecraft backup
 TODO subscribe to all security email lists...
 TODO add cpu usage monitor

@@ -80,13 +80,7 @@ def add_root_drive():
                 "with_mount_unit": True,
             },
         ],
-        "directories": [
-            {
-                "path": "/var/mnt/stash",
-                "user": { "name": "core" },
-                "group": { "name": "core" },
-            },
-        ],
+        "directories": [],
         "files": [],
     }
 
@@ -122,11 +116,6 @@ def add_more_drive():
             "path": f"/var/mnt/{d["name"]}",
             "wipe_filesystem": d["wipe"],
             "with_mount_unit": True,
-        })
-        but["storage"]["directories"].append({
-            "path": f"/var/mnt/{d["name"]}",
-            "user": { "name": "core" },
-            "group": { "name": "core" },
         })
 
 def add_ssh_keys():
