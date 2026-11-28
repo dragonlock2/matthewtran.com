@@ -1,8 +1,8 @@
 # matthewtran.com
 
 TODO update.py systemd to pull images
-TODO add quadlet
-TODO update.py ssh to update
+TODO add pod and quadlet
+TODO update.py restart pods
 
 TODO update and move rest of services
 

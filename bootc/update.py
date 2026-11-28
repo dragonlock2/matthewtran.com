@@ -183,6 +183,16 @@ def generate_bootc_users(cf):
     cf.append("RUN echo \"net.ipv4.ip_unprivileged_port_start=80\" > /etc/sysctl.d/99-unprivileged-ports.conf")
 
     # image update support
+    up = []
+    for user in IMAGES:
+        for img in IMAGES[user]:
+            up.extend([
+                "ExecStart=/usr/sbin/runuser -u core -- skopeo copy" +
+                    f" docker://{cfg["core"]["registry"]}:5001/{IMAGE_PREFIX}-{user}-{img}:latest" +
+                    f" oci:/var/lib/imagestore/{user}:{img}:latest",
+                f"ExecStart=/usr/sbin/runuser -u {user} -- podman pull oci:/var/lib/imagestore/{user}:{img}:latest",
+                # TODO update pods
+            ])
     Path("bootc/build/imagestore.conf").write_text("\n".join([
         # NOTE image store stays if user removed
         f"d /var/lib/imagestore/{user} 0750 core {user} - -"
@@ -197,7 +207,7 @@ def generate_bootc_users(cf):
         "[Service]",
         "Type=oneshot",
         "RemainAfterExit=yes",
-        "ExecStart=echo hello", # TODO update
+        *up,
         f"ExecStart=touch /var/lib/{IMAGE_PREFIX}-update.stamp",
         "[Install]",
         "WantedBy=multi-user.target",
@@ -205,14 +215,12 @@ def generate_bootc_users(cf):
     cf.append("COPY build/imagestore.conf /usr/lib/tmpfiles.d")
     cf.append(f"COPY build/{IMAGE_PREFIX}-update.service /usr/lib/systemd/system")
     cf.append(f"RUN systemctl enable {IMAGE_PREFIX}-update.service")
-    # TODO systemd service to copy images and restart pods
-        # admin: skopeo copy docker://<img>:latest oci:/var/lib/imagestore/<usr>:<img>:latest
-        # service: podman pull oci:/var/lib/imagestore/<usr>:<img>:latest
-        # restart pods
-        # mount <data_dir>/<usr>/<img>:/data:Z
 
 def generate_bootc_quadlets(cf):
-    # TODO add quadlets
+    # TODO make data dir
+    # TODO make pod
+    # TODO make quadlets
+        # mount <data_dir>/<usr>/<img>:/data:Z
     pass
 
 def generate_bootc():

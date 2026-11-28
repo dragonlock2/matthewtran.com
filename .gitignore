@@ -25,12 +25,6 @@ website/discord.txt
 # minecraft
 minecraft/server.properties
 
-# minecraft_bedrock
-minecraft_bedrock/server.properties
-
-# terraria
-terraria/*.txt
-
 # nas
 nas/Dockerfile
 nas/smb.conf
