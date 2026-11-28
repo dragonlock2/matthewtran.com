@@ -44,6 +44,27 @@ IMAGES = { # defines services
     # ],
 }
 
+PORTS = {
+    "web": [
+        "80:80", # website
+        "443:443",
+        "2222:22", # forgejo
+    ],
+    # "crypto": [
+    #     "18080:18080", # monerod
+    #     "18081:18081",
+    #     "3333:3333", # p2pool
+    #     "37888:37888",
+    #     "37889:37889",
+    # ],
+    # "game": [
+    #     "25565:25565", # minecraft
+    # ],
+    # "nas": [
+    #     "445:445", # nas
+    # ],
+}
+
 class Registry:
     @staticmethod
     def generate_keys(cfg):
@@ -191,7 +212,7 @@ def generate_bootc_users(cf):
                     f" docker://{cfg["core"]["registry"]}:5001/{IMAGE_PREFIX}-{user}-{img}:latest" +
                     f" oci:/var/lib/imagestore/{user}:{img}:latest",
                 f"ExecStart=/usr/sbin/runuser -u {user} -- podman pull oci:/var/lib/imagestore/{user}:{img}:latest",
-                # TODO update pods
+                # TODO update web-pod and web-forgejo
             ])
     Path("bootc/build/imagestore.conf").write_text("\n".join([
         # NOTE image store stays if user removed
@@ -217,11 +238,38 @@ def generate_bootc_users(cf):
     cf.append(f"RUN systemctl enable {IMAGE_PREFIX}-update.service")
 
 def generate_bootc_quadlets(cf):
-    # TODO make data dir
-    # TODO make pod
-    # TODO make quadlets
-        # mount <data_dir>/<usr>/<img>:/data:Z
-    pass
+    # create data directories
+    data_dir = [f"d {cfg["core"]["data_dir"]} 0755 core core - -"]
+    for user in IMAGES:
+        data_dir.append(f"d {cfg["core"]["data_dir"]}/{user} 0770 {user} {user} - -")
+        for img in IMAGES[user]:
+            data_dir.append(f"d {cfg["core"]["data_dir"]}/{user}/{img} 0770 {user} {user} - -")
+    Path("bootc/build/data_dir.conf").write_text("\n".join(data_dir)) # NOTE folders stay if user removed
+    cf.append("COPY build/data_dir.conf /usr/lib/tmpfiles.d")
+
+    # create pods
+    for user in IMAGES:
+        Path(f"bootc/build/{user}.pod").write_text("\n".join([
+            "[Pod]",
+            *[f"PublishPort={p}" for p in PORTS[user]], # TODO all ports fail to bind
+        ]))
+        cf.append(f"RUN mkdir -p /usr/share/containers/systemd/users/{UIDS[user]}")
+        cf.append(f"COPY build/{user}.pod /usr/share/containers/systemd/users/{UIDS[user]}")
+
+    # create containers
+    for user in IMAGES:
+        for img in IMAGES[user]:
+            Path(f"bootc/build/{user}-{img}.container").write_text("\n".join([
+                "[Container]",
+                f"ContainerName={img}",
+                f"Image={img}:latest",
+                "Pull=never",
+                f"Pod={user}.pod",
+                f"Volume={cfg["core"]["data_dir"]}/{user}/{img}:/data:Z",
+                "[Install]",
+                "WantedBy=default.target",
+            ]))
+            cf.append(f"COPY build/{user}-{img}.container /usr/share/containers/systemd/users/{UIDS[user]}")
 
 def generate_bootc():
     cf = []
