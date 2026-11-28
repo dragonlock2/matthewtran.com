@@ -7,6 +7,7 @@ core:
     key: <LUKS key>
     wipe: true
   data_dir: /var/mnt/stash/data
+  tv_passwd: password
 drives:
 - name: stuff
   key: <LUKS key>
@@ -27,3 +28,8 @@ forgejo:
   pass: password
 minecraft:
   world: main
+nas:
+  users:
+    matt: password
+  mounts:
+    stuff: /var/mnt/stuff

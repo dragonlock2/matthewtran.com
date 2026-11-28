@@ -39,9 +39,9 @@ IMAGES = { # defines services
     "game": [
         "minecraft",
     ],
-    # "nas": [
-    #     "samba",
-    # ],
+    "nas": [
+        "samba",
+    ],
 }
 
 PORTS = {
@@ -248,6 +248,8 @@ def generate_bootc_quadlets(cf):
         data_dir.append(f"d {cfg["core"]["data_dir"]}/{user} 0770 {user} {user} - -")
         for img in IMAGES[user]:
             data_dir.append(f"d {cfg["core"]["data_dir"]}/{user}/{img} 0755 {user} {user} - -")
+    for mnt in cfg["nas"]["mounts"].values():
+        data_dir.append(f"d {mnt}/share 0770 nas nas - -")
     Path("bootc/build/data_dir.conf").write_text("\n".join(data_dir)) # NOTE folders stay if user removed
     cf.append("COPY build/data_dir.conf /usr/lib/tmpfiles.d")
 
@@ -263,23 +265,51 @@ def generate_bootc_quadlets(cf):
     # create containers
     for user in IMAGES:
         for img in IMAGES[user]:
+            vols = [f"Volume={cfg["core"]["data_dir"]}/{user}/{img}:/data:Z"]
+            if user == "nas":
+                vols.extend([
+                    f"Volume={mnt_dir}/share:/mnt/{mnt}:Z"
+                    for mnt, mnt_dir in cfg["nas"]["mounts"].items()
+                ])
             Path(f"bootc/build/{user}-{img}.container").write_text("\n".join([
                 "[Container]",
                 f"ContainerName={img}",
                 f"Image={img}:latest",
                 "Pull=never",
                 f"Pod={user}.pod",
-                f"Volume={cfg["core"]["data_dir"]}/{user}/{img}:/data:Z",
+                *vols,
                 "[Install]",
                 "WantedBy=default.target",
             ]))
             cf.append(f"COPY build/{user}-{img}.container /etc/containers/systemd/users/{UIDS[user]}")
+
+def generate_bootc_avahi(cf):
+    # time machine
+    for mnt in cfg["nas"]["mounts"]:
+        Path(f"bootc/build/timemachine-{mnt}.conf").write_text("\n".join([
+            "<?xml version=\"1.0\" standalone='no'?>",
+            "<!DOCTYPE service-group SYSTEM \"avahi-service.dtd\">",
+            "<service-group>",
+            f"  <name replace-wildcards=\"yes\">%h - {mnt}</name>",
+            "  <service>",
+            "    <type>_smb._tcp</type>",
+            "    <port>445</port>",
+            "  </service>",
+            "  <service>",
+            "    <type>_adisk._tcp</type>",
+            f"    <txt-record>dk0=adVN={mnt},adVF=0x82</txt-record>",
+            "    <txt-record>sys=waMa=0,adVF=0x100</txt-record>",
+            "  </service>",
+            "</service-group>",
+        ]))
+        cf.append(f"COPY build/timemachine-{mnt}.conf /etc/avahi/services/nas-{mnt}.service")
 
 def generate_bootc():
     cf = []
     generate_bootc_base(cf)
     generate_bootc_users(cf)
     generate_bootc_quadlets(cf)
+    generate_bootc_avahi(cf)
     cf.append("RUN bootc container lint --fatal-warnings")
     Path("bootc/Containerfile").write_text("\n".join(cf))
 
@@ -306,6 +336,20 @@ def generate_apps():
     Path("game/minecraft/server.properties").write_text(
         Path("game/minecraft/server.default").read_text() +
         f"level-name=/data/{cfg["minecraft"]["world"]}\n")
+
+    # nas/samba
+    Path("nas/samba/Containerfile").write_text(
+        Path("nas/samba/Containerfile.template").read_text() + "\n".join([
+            l for user in cfg["nas"]["users"] for l in [
+            f"RUN useradd -M -s /bin/false {user}",
+            f"RUN echo \"{cfg["nas"]["users"][user]}\\n{cfg["nas"]["users"][user]}\\n\" | pdbedit -s smb.conf -a {user}",
+        ]]))
+    Path("nas/samba/smb.conf").write_text(
+        Path("nas/samba/smb.conf.template").read_text() + "\n".join([
+            l for mnt in cfg["nas"]["mounts"] for l in [
+            f"[{mnt}]",
+            f"path = /mnt/{mnt}\n",
+        ]]))
 
 def update():
     if args.provision:

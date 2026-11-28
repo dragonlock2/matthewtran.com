@@ -17,5 +17,5 @@ web/forgejo/entry.sh
 game/minecraft/server.properties
 
 # nas
-nas/samba/Dockerfile
+nas/samba/Containerfile
 nas/samba/smb.conf
