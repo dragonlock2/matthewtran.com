@@ -9,7 +9,8 @@ bootc/build
 bootc/certs
 bootc/*.yaml
 
-# web/forgejo
+# web
+web/website/discord.txt
 web/forgejo/entry.sh
 
 
@@ -18,9 +19,6 @@ config/server.json
 config/*.bu
 config/*.ign
 config/*.iso
-
-# website
-website/discord.txt
 
 # minecraft
 minecraft/server.properties

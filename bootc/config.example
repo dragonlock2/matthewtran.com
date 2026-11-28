@@ -20,6 +20,8 @@ drives:
   - /dev/disk/by-id/disk2 # (blockdev --getsize64 <disk>) / 2^20
   size_mib: 65536 # reduce by some margin in case of part variance
   wipe: true
+website:
+  discord_hook: <secret discord webhook>
 forgejo:
   user: dragonlock2
   pass: password

@@ -1,6 +1,7 @@
 # matthewtran.com
 
 TODO update and move rest of services
+TODO test all services
 
 TODO update.py w/ or w/o build cache
 TODO update bootstrap.py with --certs in case certs is deleted

@@ -29,7 +29,7 @@ UIDS = { # defines users
 
 IMAGES = { # defines services
     "web": [
-        # "website",
+        "website",
         "forgejo",
     ],
     # "crypto": [
@@ -284,6 +284,9 @@ def generate_bootc():
     Path("bootc/Containerfile").write_text("\n".join(cf))
 
 def generate_apps():
+    # web/website
+    Path("web/website/discord.txt").write_text(cfg["website"]["discord_hook"])
+
     # web/forgejo
     Path("web/forgejo/entry.sh").write_text("\n".join([
         "#!/bin/sh",
